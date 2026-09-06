@@ -44,8 +44,10 @@
   ];
 
   # ===== 日志大小限制 =====
-  services.journald.extraConfig = ''
-    SystemMaxUse=500M
-    MaxRetentionSec=2week
-  '';
+  services.journald.settings = {
+      Journal = {
+         SystemMaxUse = "100M";
+         Storage = "persistent";
+      };
+  };
 }
