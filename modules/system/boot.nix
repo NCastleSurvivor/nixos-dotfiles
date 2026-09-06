@@ -7,9 +7,14 @@
         efiSupport = true;
         efiInstallAsRemovable = true;
         extraConfig = ''
-          TIMEOUT=5
-          GRAPHICS=auto
-          VERBOSE=no
+          timeout: 3
+          graphics: auto
+          verbose: no
+
+          /Windows
+            comment: Boot Windows from Second SSD
+            protocol: efi_chainload
+            image_path: uuid(c27691fd-0d6e-4324-b966-d709a418d799):/EFI/Microsoft/Boot/bootmgfw.efi
         '';
       };
       efi.canTouchEfiVariables = true;
