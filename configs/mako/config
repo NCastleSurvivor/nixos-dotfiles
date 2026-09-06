@@ -1,0 +1,91 @@
+# ============================================================
+# Mako 通知守护配置
+# 路径：~/.config/mako/config
+# 重载：makoctl reload
+# ============================================================
+
+# ===== 外观 =====
+font=JetBrainsMono Nerd Font 12
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#89b4fa
+border-size=2
+border-radius=8
+padding=12
+margin=10
+width=360
+height=80
+max-height=200
+max-icon-size=48
+
+# ===== 位置 =====
+output=
+anchor=top-right
+layer=top
+
+# ===== 行为 =====
+default-timeout=5000
+ignore-timeout=0
+max-visible=5
+sort=+time
+group-by=app-name
+hidden-on-startup=false
+
+# ===== 图标 =====
+icon-path=/usr/share/icons/hicolor/128x128/apps
+icon-path=/usr/share/icons/Adwaita/128x128/apps
+icon-path=/usr/share/icons/Papirus/128x128/apps
+
+# ===== 颜色 =====
+# Urgency levels
+[urgency=low]
+background-color=#313244
+text-color=#a6adc8
+border-color=#585b70
+default-timeout=3000
+
+[urgency=normal]
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#89b4fa
+default-timeout=5000
+
+[urgency=high]
+background-color=#1e1e2e
+text-color=#f38ba8
+border-color=#f38ba8
+default-timeout=0
+default-action=echo "High priority notification"
+
+# ===== 特定应用样式 =====
+[app-name=zen-browser]
+background-color=#1e1e2e
+border-color=#89b4fa
+
+[app-name=kitty]
+background-color=#1e1e2e
+border-color=#a6e3a1
+
+[app-name=discord]
+background-color=#1e1e2e
+border-color=#cba6f7
+
+# ===== 快捷键 =====
+# 在 mako 中使用快捷键需要通过 sway/niri 配置绑定 makoctl
+# 示例（niri config.kdl）：
+# Mod+Shift+M { spawn "makoctl dismiss"; }
+# Mod+Shift+N { spawn "makoctl restore"; }
+# Mod+Shift+D { spawn "makoctl dismiss -a"; }
+
+# ===== 按钮 =====
+button-left=invoke-default-action
+button-right=close
+button-middle=close
+button-forward=close
+button-back=close
+
+# ===== 其他 =====
+markup=full
+actions=on
+dnd=false
+inhibited=false
