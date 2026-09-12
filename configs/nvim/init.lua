@@ -1,8 +1,2 @@
-vim.g.mapleader = "\\"
-vim.g.maplocalleader = ","
-
-require('config.options')
-require('config.lazy')
-require('config.keymaps')
-require('config.autocmds')
-require('config.colorscheme')
+-- bootstrap lazy.nvim, LazyVim and your plugins
+require("config.lazy")

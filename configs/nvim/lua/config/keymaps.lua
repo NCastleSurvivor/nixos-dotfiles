@@ -1,54 +1,35 @@
--- This file is automatically loaded by init.lua
+-- Keymaps are automatically loaded on the VeryLazy event
+-- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Add any additional keymaps here
 
-local function map(mode, lhs, rhs, opts)
-  local has_lazy, lazy_handler = pcall(require, "lazy.core.handler")
-  local has_key = false
+local map = LazyVim.safe_keymap_set
+local del = vim.keymap.del
 
-  if has_lazy and lazy_handler.handlers and lazy_handler.handlers.keys then
-    local keys = lazy_handler.handlers.keys
-    local key_id = keys.parse({ lhs, mode = mode }).id
-    if keys.active and keys[key_id] then
-      has_key = true
-    end
-  end
+-- disable marco
+map({ "n", "v" }, "q", "<cmd> echo 'marco not set'<cr>")
+-- better paste
+-- map({ "v", "n" }, "[p", '"0p', { desc = "[p]aste latest after corsur" })
+map({ "v", "n" }, "[P", '"0P', { desc = "[P]aste latest before corsur" })
+map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>wa<cr><esc>", { desc = "[S]ave File" })
 
-  if not has_key then
-    opts = opts or {}
-    opts.silent = opts.silent ~= false
-    vim.keymap.set(mode, lhs, rhs, opts)
-  end
+map({ "n", "t" }, "<c-t>", '<cmd>Lspsaga term_toggle<cr>', { desc = "Terminal (Root Dir)" })
+-- map({ "t" }, "<A-n>", '<C-\\><C-n>', { desc = "Terminal Normal Mode" })
+
+-- map("n", "<leader>gb", '<cmd>Gitsigns blame_line<cr>', { desc = "[G]it [B]lame Line" })
+
+map("n", "<leader>uM", '<cmd>SmearCursorToggle<cr>', { desc = "Toggle S[m]ear" })
+
+if vim.fn.executable("lazygit") == 1 then
+    map("n", "<leader>gG", function() Snacks.lazygit({ cwd = LazyVim.root.git() }) end, { desc = "Lazygit (Root Dir)" })
+    map("n", "<leader>gg", function() Snacks.lazygit() end, { desc = "Lazygit (cwd)" })
 end
+Snacks.toggle.zoom():map("<leader>wm"):map("<leader>uz")
+Snacks.toggle.zen():map("<leader>uZ")
 
--- better movement
-map({"n", "x"},"j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map({"n", "x"},"k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-map({ "n", "v", "o" }, "H", "^", { desc = "Use 'H' as '^'" })
-map({ "n", "v", "o" }, "L", "$", { desc = "Use 'L' as '$'" })
-
--- move to window using the <ctrl> hjkl keys
-map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
-
--- search
-map({ "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
-map({ "n", "x" }, "gw", "*N", { desc = "Search word under cursor" })
-
--- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
-map("n", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
-map("x", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
-map("o", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
-map("n", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
-map("x", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
-map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
-
--- add undo break-points
-map("i", ",", ",<c-g>u")
-map("i", ".", ".<c-g>u")
-map("i", ";", ";<c-g>u")
-
--- better indenting
-map("v", "<", "<gv")
-map("v", ">", ">gv")
+del("n", "<A-j>")
+del("n", "<A-k>")
+del("i", "<A-j>")
+del("i", "<A-k>")
+del("v", "<A-j>")
+del("v", "<A-k>")
 

@@ -28,7 +28,6 @@
   environment.systemPackages = with pkgs; [
     alsa-utils       # ALSA 底层工具（alsamixer, amixer）
     pavucontrol      # PulseAudio 音量控制面板（兼容 PipeWire）
-    qpwgraph         # PipeWire 图形化连线调音台
     playerctl        # MPRIS 媒体控制
     pamixer          # 命令行音量控制（waybar 模块用）
   ];

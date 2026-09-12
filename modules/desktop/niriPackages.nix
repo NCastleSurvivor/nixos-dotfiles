@@ -13,20 +13,18 @@
     # --- 锁屏 / 空闲 / 壁纸 ---
     swaylock-effects    # 锁屏（带模糊/特效）
     swayidle            # 空闲守护（息屏/锁屏/休眠）
-    swaybg              # 壁纸设置
+    awww              # 壁纸设置
 
     # --- 音量/亮度 OSD ---
     wob                 # Wayland 浮动进度条
 
     # --- 文件管理器 ---
     pcmanfm-qt          # Qt 文件管理器（轻量、支持挂载）
-    peazip              # 跨平台压缩包管理器
 
     # --- 截图 ---
     grim                # 截图
     slurp               # 框选区域
     wl-clipboard        # 剪贴板（截图复制等）
-    wlr-randr        # 显示器信息查看
   ];
 
   # ===== Qt 程序 Wayland 支持 =====

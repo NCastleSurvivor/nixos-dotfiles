@@ -21,7 +21,8 @@
     
     # zen 浏览器
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-    
+    ffmpeg
+
     # ----- 别名依赖（environment.shellAliases 中引用）-----
     eza              # ls/ll/la 别名
     bat              # cat 别名
@@ -32,9 +33,7 @@
     parted
     gptfdisk
 
-    # ----- 硬件信息/诊断 -----
-    dmidecode
-
+    android-tools
     # ----- 编辑器 -----
     neovim
     nodejs

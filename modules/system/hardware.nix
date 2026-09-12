@@ -87,7 +87,6 @@
     # 电源/温度
     powertop
     tlp
-    acpitool
     smartmontools
   ];
 
