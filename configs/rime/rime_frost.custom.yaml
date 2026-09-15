@@ -1,0 +1,12 @@
+# 白霜拼音（rime_frost）挂载万象大模型
+# 语法模型文件：wanxiang-lts-zh-hans.gram（已放用户目录根）
+patch:
+  grammar:
+    language: wanxiang-lts-zh-hans
+    non_collocation_penalty: -4
+    collocation_max_length: 5
+    collocation_min_length: 2
+    collocation_penalty: -14
+  translator/contextual_suggestions: true
+  translator/max_homophones: 4
+  translator/max_homographs: 2
