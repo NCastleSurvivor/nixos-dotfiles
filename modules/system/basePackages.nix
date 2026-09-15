@@ -1,4 +1,5 @@
 { config, pkgs, ... }:
+
 {
   # 除了 doas。nix外其余移至此处
   environment.systemPackages = with pkgs; [

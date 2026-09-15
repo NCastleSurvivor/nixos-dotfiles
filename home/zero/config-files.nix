@@ -15,7 +15,7 @@
 
     dataFile = {
       "fcitx5/rime" = { source = "${configsDir}/rime"; force = true; recursive = true; };
-      "fcitx5/rime/wangxiang-lts-zh-hans.gram" = { source = "${HOME}/Workspace/wanxiang-lts-zh-hans.gram"; force = true; recursive = true; };
+      "fcitx5/rime/wangxiang-lts-zh-hans.gram" = { source = config.lib.file.mkOutOfStoreSymlink "/home/zero/Workspace/wanxiang-lts-zh-hans.gram"; force = true; recursive = true; };
     };
   };
 
