@@ -2,11 +2,11 @@
 // "/-" comments out the following node.
 
 spawn-at-startup "waybar"
+spawn-at-startup "mako"
 spawn-at-startup "fcitx5"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "sh -c 'sleep 1 && awww img ~/.config/niri/wallhaven/wall.jpg'"
-spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 environment {

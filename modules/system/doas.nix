@@ -30,10 +30,4 @@
       exec ${pkgs.doas}/bin/doas "$@"
     '')
   ];
-
-  # fish shell 中的 sudo 别名（在 home/zero/shell.nix 中也设置了）
-  environment.shellAliases = {
-    reboot = "doas reboot";
-    poweroff = "doas poweroff";
-  };
 }

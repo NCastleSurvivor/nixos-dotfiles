@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  # 除了 doas。nix外其余移至此处
+  # 除了 doas.nix外其余移至此处
   environment.systemPackages = with pkgs; [
     alsa-utils # ALSA 底层工具（alsamixer, amixer）
     pavucontrol # PulseAudio 音量控制面板（兼容 PipeWire）
@@ -13,7 +13,6 @@
 
     # 电源/温度
     powertop
-    tlp
     smartmontools
 
     # 基础网络工具

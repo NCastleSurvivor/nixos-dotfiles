@@ -32,9 +32,9 @@ group-by=app-name
 hidden-on-startup=false
 
 # ===== 图标 =====
-icon-path=/usr/share/icons/hicolor/128x128/apps
-icon-path=/usr/share/icons/Adwaita/128x128/apps
-icon-path=/usr/share/icons/Papirus/128x128/apps
+#icon-path=/usr/share/icons/hicolor/128x128/apps
+#icon-path=/usr/share/icons/Adwaita/128x128/apps
+#icon-path=/usr/share/icons/Papirus/128x128/apps
 
 # ===== 颜色 =====
 # Urgency levels
@@ -55,7 +55,7 @@ background-color=#1e1e2e
 text-color=#f38ba8
 border-color=#f38ba8
 default-timeout=0
-default-action=echo "High priority notification"
+#default-action=echo "High priority notification"
 
 # ===== 特定应用样式 =====
 [app-name=zen-browser]

@@ -31,10 +31,12 @@
       substituters = [
         "https://mirror.sjtu.edu.cn/nix-channels/store"
         "https://mirrors.lzu.edu.cn/nix-channels/store"
+        "https://attic.xuyh0120.win/lantian"
         "https://cache.nixos.org/"
       ];
 
       trusted-public-keys = [
+        "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
     };

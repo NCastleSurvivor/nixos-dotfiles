@@ -21,7 +21,7 @@
 * {
   border: none;
   /* 字体设置：优先使用 Nerd Font 以支持图标 */
-  font-family: "JetBrainsMono Nerd Font", "Noto Sans SC", sans-serif;
+  font-family: "JetBrainsMono Nerd Font", "Noto Gothic SC", sans-serif;
   font-size: 14px;      /* 全局字体大小 */
   font-weight: 600;     /* 字重 (粗细) */
   min-height: 0;

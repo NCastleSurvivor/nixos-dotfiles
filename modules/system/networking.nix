@@ -3,7 +3,7 @@
   networking = {
     hostName = "NCastleSurvivor";
     dhcpcd.enable = false;
-    useDHCP = false; # 禁用默认 DHCP，由 dhcpcd 统一处理
+    useDHCP = false; # 禁用默认 DHCP，由 networkmanager 统一处理
 
     networkmanager = {
       enable = true;
@@ -24,7 +24,7 @@
   };
 
   # 启动时不等待网络（dhcpcd 不阻塞启动）
-  systemd.services.dhcpcd-wait-online.enable = false;
+  #systemd.services.dhcpcd-wait-online.enable = false;
 
 
   # ============================================================

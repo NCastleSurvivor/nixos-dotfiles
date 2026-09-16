@@ -35,9 +35,5 @@
     "ntp1.cstnet.cn"
     "ntp2.cstnet.cn"
   ];
-
-  services.htpdate.servers = [
-    "www.baidu.com"
-  ];
 }
 

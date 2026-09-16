@@ -23,7 +23,7 @@
 
     kernelParams = [
       "quiet"
-      "splash"
+      #"splash"
       "loglevel=3"
       "rd.systemd.show_status=auto"
       "nowatchdog"
@@ -37,7 +37,7 @@
       "amdgpu.sg_display=0"
 
       # CachyOS 内核优化
-      "mitigations=off" # 关闭 CPU 安全缓解，提升性能（桌面可接受风险）
+      #"mitigations=off" # 关闭 CPU 安全缓解，提升性能（桌面可接受风险）
       #"processor.max_cstate=1"   # 限制 C-state，降低延迟
       #"idle=nomwait"              # 禁用 mwait，部分系统可提升响应
     ];

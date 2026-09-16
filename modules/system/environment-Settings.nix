@@ -9,21 +9,21 @@
   environment.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "nvim";
-    BROWSER = "zen";
+    BROWSER = "chromium";
     #TERM = "xterm-kitty";
     PAGER = "less";
   };
 
-  # ===== 全局 shell 别名 =====
-  environment.shellAliases = {
-    ls = "eza --icons=auto";
-    ll = "eza -l --icons=auto --git";
-    la = "eza -a --icons=auto";
-    cat = "bat --plain";
-    grep = "rg";
-    find = "fd";
-    df = "df -h";
-    du = "du -h";
-    mkdir = "mkdir -pv";
-  };
+  # ===== 全局 shell 别名 放入home/zero/shell=====
+  #environment.shellAliases = {
+  #  ls = "eza --icons=auto";
+  #  ll = "eza -l --icons=auto --git";
+  #  la = "eza -a --icons=auto";
+  #  cat = "bat --plain";
+  #  grep = "rg";
+  #  find = "fd";
+  #  df = "df -h";
+  #  du = "du -h";
+  #  mkdir = "mkdir -pv";
+  #};
 }

@@ -12,20 +12,19 @@
   # ============================================================
   hardware = {
 
-    enableAllFirmware = true;
-    firmware = with pkgs;[
-      linux-firmware
-    ];
+    enableAllFirmware = true; # 包含 Linux-firmware
+    #firmware = with pkgs;[
+    #  linux-firmware
+    #];
 
     cpu.amd.updateMicrocode = true;
 
     nvidia = {
-      #enable = true;
       package = config.boot.kernelPackages.nvidiaPackages.latest;
 
       modesetting.enable = true; # Wayland 必需
       nvidiaSettings = true;
-      open = true; # RTX 2060 (Turing) 不支持开源驱动
+      open = false; # RTX 2060 (Turing) 不支持开源驱动
 
       powerManagement = {
         enable = true;

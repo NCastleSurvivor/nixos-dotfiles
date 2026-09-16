@@ -11,10 +11,6 @@
     #    };
 
     shellInit = ''
-      set -gx XMODIFIERS "@im=fcitx"
-      set -gx GTK_IM_MODULE "fcitx"
-      set -gx QT_IM_MODULE "fcitx"
-
       fish_add_path $HOME/go/bin
       fish_add_path $HOME/.local/share/pnpm
       fish_add_path $HOME/.local/bin
@@ -23,8 +19,8 @@
     '';
 
     shellAliases = {
-      lla = "eza -la -icons=auto --git";
-      lt = "eza -tree -icons=auto ";
+      lla = "eza -la icons=auto --git";
+      lt = "eza -tree icons=auto ";
       vi = "nvim";
       vim = "nvim";
 
@@ -35,6 +31,15 @@
       cp = "cp -iv";
       mv = "mv -iv";
       rm = "rm -Iv";
+      ls = "eza --icons=auto";
+      ll = "eza -l --icons=auto --git";
+      la = "eza -a --icons=auto";
+      cat = "bat --plain";
+      grep = "rg";
+      find = "fd";
+      df = "df -h";
+      du = "du -h";
+      mkdir = "mkdir -pv";
 
       ".." = "cd ..";
       "..." = "cd ../..";
@@ -60,8 +65,8 @@
              bind -M insert \cr history-search-backward
              bind -M default \cr history-search-backward
 
-             function fish_greetinh
-                set -l user_name (whomi)
+             function fish_greeting
+                set -l user_name (whoami)
       	  set -l sys_info (uname -srm)
       	  set -l fish_ver (string split " " (fish --version))[3]
       	  set -l date_info (date '+%Y-%m-%d %H:%M:%S')

@@ -2,8 +2,6 @@
 
 {
   programs = {
-    kitty.enable = true;
-
     git = {
       enable = true;
       settings = {
@@ -26,7 +24,7 @@
           side-by-side = true;
           line-numbers = true;
         };
-        alisas = {
+        alias = {
           st = "status";
           co = "checkout";
           br = "branch";

@@ -16,9 +16,6 @@
 
     sessionVariables = {
       TERMINAL = "kitty";
-      EDITOR = "nvim";
-      VISUAL = "nvim";
-      BROWSER = "zen";
       PAGER = "less";
       LESS = "-R";
     };

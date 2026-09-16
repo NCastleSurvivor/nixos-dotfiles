@@ -5,6 +5,14 @@
   # ============================================================
 
   environment.systemPackages = with pkgs; [
+    kitty
+    yazi 
+    lsof 
+    unrar
+    libnotify
+    xdg-utils
+    delta
+    
     # ----- 基础命令行工具（系统运维必需）-----
     wget
     curl
@@ -40,10 +48,12 @@
     python3
     # 社交软件及音乐播放器
     qq
-    wechat-uos
+    wechat
     gapless
   ];
   fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    maple-mono.NF-CN-unhinted
     font-awesome
     powerline-symbols
     nerd-fonts.iosevka
