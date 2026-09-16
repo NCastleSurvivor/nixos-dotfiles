@@ -48,7 +48,7 @@
     python3
     # 社交软件及音乐播放器
     qq
-    wechat
+    wechat-uos #后续换成wechat，暂时连接失败无法下载包
     gapless
   ];
   fonts.packages = with pkgs; [
