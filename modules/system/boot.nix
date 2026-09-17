@@ -10,6 +10,7 @@
           timeout: 3
           graphics: auto
           verbose: no
+          default_entry: 3
 
           /Windows
             comment: Boot Windows from Second SSD

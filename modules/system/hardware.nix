@@ -53,7 +53,7 @@
     #powertop.enable = true; # powertop 自动调优（正确路径：powerManagement.powertop）
   };
 
-  zarmSwap = {
+  zramSwap = {
     enable = true;
     algorithm = "zstd";
     memoryPercent = 25;

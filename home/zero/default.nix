@@ -6,6 +6,7 @@
     ./shell.nix
     ./config-files.nix
     ./programs.nix
+    ./nh.nix
   ];
 
   # ===== 用户基本信息 =====

@@ -16,7 +16,12 @@
       allowedTCPPorts = [ ];
       allowedUDPPorts = [ ];
     };
-  };
+    proxy =  {
+      default = "";
+      noProxy = "127.0.0.1,localhost,.localdomain";
+        };
+
+    };
 
   # 启动时不等待网络（dhcpcd 不阻塞启动）
   #systemd.services.dhcpcd-wait-online.enable = false;
@@ -32,11 +37,20 @@
     blueman.enable = true; # 蓝牙图形前端
     resolved = {
         enable = true;
-        extraConfig = ''
-            DNS=223.5.5
-            Domains=~.
-            DNSOverTLS=opportunistic
-            '';
+        settings = {
+            Resolve = {
+                DNS = [
+                    "223.5.5"
+                    "1.1.1.1"
+                    ];
+                FallbackDNS = [
+                    "8.8.8.8"
+                    "9.9.9.9"
+                ];
+                Domains= ["~."];
+                DNSOverTLS = "opportunistic";
+                };
+            };
         };
     };
 }

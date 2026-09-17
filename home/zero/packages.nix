@@ -12,7 +12,10 @@
     libnotify
     xdg-utils
     delta
-    
+
+    #nh相关依赖
+    nix-output-monitor
+    nvd
     # ----- 基础命令行工具（系统运维必需）-----
     wget
     curl
@@ -48,7 +51,7 @@
     python3
     # 社交软件及音乐播放器
     qq
-    wechat-uos #后续换成wechat，暂时连接失败无法下载包
+    wechat-uos
     gapless
   ];
   fonts.packages = with pkgs; [
