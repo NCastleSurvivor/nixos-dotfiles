@@ -36,7 +36,7 @@
             DNS=223.5.5
             Domains=~.
             DNSOverTLS=opportunistic
-            ''
+            '';
         };
     };
 }

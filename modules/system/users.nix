@@ -8,7 +8,7 @@
       description = "zero";
       extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
       shell = pkgs.fish;
-      hashedPassword = "$y$j9T$MCyrRlBbhbH7XFwqPXWMD1$Uz6cEK/XAow2CHnPbjUHD.SVBBEMypMgXPHq88OAaU3";
+      hashedPassword = "!";
     };
   };
 }
