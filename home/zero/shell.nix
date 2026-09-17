@@ -19,8 +19,8 @@
     '';
 
     shellAliases = {
-      lla = "eza -la icons=auto --git";
-      lt = "eza -tree icons=auto ";
+      lla = "eza -la --icons=auto --git";
+      lt = "eza -tree --icons=auto ";
       vi = "nvim";
       vim = "nvim";
 

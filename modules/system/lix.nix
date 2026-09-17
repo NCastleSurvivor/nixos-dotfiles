@@ -60,7 +60,7 @@
   # 系统级 nix 工具
   # ============================================================
   environment.systemPackages = with pkgs; [
-    nixpkgs-fmt # nix 代码格式化
+    nixfmt-tree # nix 代码格式化
     nix-diff # 对比两个 derivation 差异
     nix-tree # 交互式依赖树查看
 

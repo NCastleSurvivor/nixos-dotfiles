@@ -6,7 +6,7 @@
     alsa-utils # ALSA 底层工具（alsamixer, amixer）
     pavucontrol # PulseAudio 音量控制面板（兼容 PipeWire）
     playerctl # MPRIS 媒体控制
-    pamixer # 命令行音量控制（waybar 模块用）
+    #pamixer # 命令行音量控制（waybar 模块用）
     nvidia-vaapi-driver
     libva-utils
     vdpauinfo

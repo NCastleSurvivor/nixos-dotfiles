@@ -49,13 +49,20 @@
   # ===== 笔记本电源管理 =====
   powerManagement = {
     enable = true;
-    cpuFreqGovernor = "powersave";
-    powertop.enable = true; # powertop 自动调优（正确路径：powerManagement.powertop）
+    #cpuFreqGovernor = "powersave"; # 已安装tlp，这两项与tlp互斥
+    #powertop.enable = true; # powertop 自动调优（正确路径：powerManagement.powertop）
   };
+
+  zarmSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 25;
+    };
 
   # TLP 电源管理
   services = {
     xserver.videoDrivers = [ "nvidia" ];
+    power-profiles-daemon.enable = false;
     tlp = {
       enable = true;
       settings = {

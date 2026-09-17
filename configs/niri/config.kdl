@@ -6,7 +6,7 @@ spawn-at-startup "mako"
 spawn-at-startup "fcitx5"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "sh -c 'sleep 1 && awww img ~/.config/niri/wallhaven/wall.jpg'"
+spawn-at-startup "sh" "-c"  "sleep 1 && awww img ~/.config/niri/wallhaven/wall.jpg"
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 environment {
@@ -167,7 +167,7 @@ binds {
     Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
     //Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     Mod+E hotkey-overlay-title="Run an Application: yazi" { spawn "kitty" "-e" "yazi"; }
-    Mod+B hotkey-overlay-title="Run an Application: zen" { spawn "zen"; }
+    Mod+B hotkey-overlay-title="Run an Application: chromium" { spawn "chromium"; }
 
     Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 

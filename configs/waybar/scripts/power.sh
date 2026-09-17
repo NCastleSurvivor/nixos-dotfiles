@@ -20,9 +20,9 @@ OPTIONS="$OP_EXIT\n$OP_SUSP\n$OP_REBT\n$OP_OFF"
 choice=$(printf '%b' "$OPTIONS" | fuzzel --dmenu --lines 4 --cache-file /dev/null)
 
 case "$choice"  in
-    *OP_EXIT) niri msg action quit ;;
-    *OP_SUSP) systemctl suspend ;;
-    *OP_REBT) systemctl reboot ;;
-    *OP_OFF)  systemctl poweroff ;;
+    *"$OP_EXIT") niri msg action quit ;;
+    *"$OP_SUSP") systemctl suspend ;;
+    *"$OP_REBT") systemctl reboot ;;
+    *"$OP_OFF")  systemctl poweroff ;;
 esac
 
