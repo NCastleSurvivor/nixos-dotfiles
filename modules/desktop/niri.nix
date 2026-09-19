@@ -27,21 +27,19 @@
   environment.systemPackages = with pkgs;[
     xwayland-satellite
     niri
-    waybar
     fuzzel
-    mako
-
-    # --- 锁屏 / 空闲 / 壁纸 ---
-    swaylock-effects # 锁屏（带模糊/特效）
-    swayidle # 空闲守护（息屏/锁屏/休眠）
-    awww # 壁纸设置
-
-    # --- 截图 ---
-    grim # 截图
-    slurp # 框选区域
-    wl-clipboard # 剪贴板（截图复制等）
+    
+    #使用noctalia、mark-shot,移除下列
+    #waybar
+    #awww
+    #mako
+    #swaylock-effects # 锁屏（带模糊/特效）
+    #swayidle # 空闲守护（息屏/锁屏/休眠）
+    #grim # 截图
+    #slurp # 框选区域
+    #wl-clipboard # 剪贴板（截图复制等）
     # --- 音量/亮度 OSD ---
-    wob # Wayland 浮动进度条
+    #wob # Wayland 浮动进度条
   ];
 
   # ===== Qt 程序 Wayland 支持 =====

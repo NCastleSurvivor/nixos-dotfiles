@@ -13,9 +13,13 @@
     xdg-utils
     delta
 
-    #nh相关依赖
+    #尝试引入 noctalia、mark-shot代替mako、waybar等
+    inputs.mark-shot.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    #nh相关
     nix-output-monitor
     nvd
+
     # ----- 基础命令行工具（系统运维必需）-----
     wget
     curl

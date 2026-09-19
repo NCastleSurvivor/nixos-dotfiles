@@ -12,6 +12,15 @@
     #  inputs.nixpkgs.follows = "nixpkgs";
     #};
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+    noctalia = {
+        url = "github:noctalia-dev/noctalia-shell";
+        inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    mark-shot = {
+        url = "github:jswysnemc/mark-shot";
+        inputs.nixpkgs.follows = "nixpkgs";
+        };
 
   };
 

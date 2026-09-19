@@ -7,6 +7,7 @@
     ./config-files.nix
     ./programs.nix
     ./nh.nix
+    ./noctalia.nix
   ];
 
   # ===== 用户基本信息 =====

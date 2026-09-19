@@ -43,16 +43,23 @@
       #"idle=nomwait"              # 禁用 mwait，部分系统可提升响应
     ];
 
-    initrd.availableKernelModules = [
-      "xhci_pci"
-      "ahci"
-      "nvme"
-      "usb_storage"
-      "sd_mod"
-      "xfs"
-      "ntfs3"
-      "vfat"
-    ];
+    initrd = {
+      availableKernelModules = [
+        "xhci_pci"
+        "ahci"
+        "nvme"
+        "usb_storage"
+        "sd_mod"
+        "xfs"
+        "ntfs3"
+        "vfat"
+      ];
+      systemd.initrdBin = with pkgs; [
+        openssl
+        libbpf
+        libxcrypt
+      ];
+    };
     blacklistedKernelModules = [ "ucsi_ccg" ];
     supportedFilesystems = [
       "xfs" # 根分区和 home 分区
