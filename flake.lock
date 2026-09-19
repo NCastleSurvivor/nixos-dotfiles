@@ -80,11 +80,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789782390,
-        "narHash": "sha256-lkMnGIdgLeHdU55Tq3JA6xAM+uUaPWoDvcxorurc3kI=",
+        "lastModified": 1789784399,
+        "narHash": "sha256-ViIp2yHRLCx37DfHJ8IA6OtMKZKW7qvvd+trJQhwooE=",
         "owner": "jswysnemc",
         "repo": "mark-shot",
-        "rev": "eef180ac03da66a0eb63903dc31de71668543603",
+        "rev": "6f00c1d246e9069b076ea94bafa490257c3dc08b",
         "type": "github"
       },
       "original": {

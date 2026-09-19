@@ -1,7 +1,7 @@
 // This config is in the KDL format: https://kdl.dev
 // "/-" comments out the following node.
 
-//spawn-at-startup "waybar"
+spawn-at-startup "noctalia"
 spawn-at-startup "fcitx5"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "xwayland-satellite"
