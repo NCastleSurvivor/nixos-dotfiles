@@ -6,7 +6,6 @@
 
     programs.noctalia = {
         enable = true;
-        
         settings = {
             compositor = {
                 name = "niri";
