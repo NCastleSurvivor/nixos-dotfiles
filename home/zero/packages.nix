@@ -6,7 +6,7 @@
 }:
 {
 myUnfreePackages = [
-    "wechat"
+    "wechat-uos"
     "qq"
     "p7zip"
     "unrar"
@@ -20,7 +20,8 @@ environment.systemPackages = with pkgs; [
     xdg-utils
     delta
 
-    wechat
+    wechat-uos
+    unrar
     qq
     #尝试引入 noctalia、mark-shot代替mako、waybar等
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
