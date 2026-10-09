@@ -5,16 +5,13 @@
   ...
 }:
 {
-  # ============================================================
-  # 统一软件包组（系统级，所有用户可用）
-  # ============================================================
-  myUnfreePackages = [
+myUnfreePackages = [
     "wechat"
     "qq"
-    "unrar"
     "p7zip"
-  ];
-  environment.systemPackages = with pkgs; [
+    "unrar"
+];
+environment.systemPackages = with pkgs; [
     kitty
     yazi
     lsof
@@ -23,6 +20,8 @@
     xdg-utils
     delta
 
+    wechat
+    qq
     #尝试引入 noctalia、mark-shot代替mako、waybar等
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.mark-shot.packages.${pkgs.stdenv.hostPlatform.system}.default
