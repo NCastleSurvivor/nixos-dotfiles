@@ -39,6 +39,7 @@
       substituters = [
         "https://mirror.sjtu.edu.cn/nix-channels/store"
         "https://mirrors.lzu.edu.cn/nix-channels/store"
+        "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://attic.xuyh0120.win/lantian"
         "https://cache.nixos.org/"
       ];

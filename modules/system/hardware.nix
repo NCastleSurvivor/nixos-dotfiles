@@ -5,16 +5,6 @@
   ...
 }:
 {
-  # ============================================================
-  # 硬件配置：AMD R7-4800H + NVIDIA RTX 2060 + Intel AX210
-  #
-  # 注意：以下公共项统一在 boot.nix 中设置，不在此重复定义：
-  #   - boot.kernelParams（含 nvidia/amdgpu/mitigations 等）
-  #   - boot.initrd.kernelModules（含 nvidia 模块）
-  #   - boot.kernelModules（含 kvm-amd/iwlwifi/iwlmvm/ntfs3）
-  # 固件（hardware.enableAllFirmware / hardware.firmware）已从 boot.nix 移至本文件。
-  # 蓝牙统一在 networking.nix 中设置。
-  # ============================================================
   myUnfreePackages = [
     "nvidia-vaapi-driver"
     "nvidia-x11"
@@ -25,12 +15,7 @@
   ];
   hardware = {
 
-    #启用官方可在分发固件
     enableRedistributableFirmware = true;
-    #enableAllFirmware = false; # 包含 Linux-firmware
-    #firmware = with pkgs;[
-    #  linux-firmware
-    #];
 
     cpu.amd.updateMicrocode = true;
 
@@ -55,6 +40,11 @@
         nvidiaBusId = "PCI:1:0:0"; # ← 用 lspci 确认实际 PCI 地址
       };
     };
+
+    bluetooth = {
+        enable = true;
+        powerOnBoot = false;
+    };
     graphics = {
       enable = true;
       enable32Bit = true;
@@ -76,7 +66,8 @@
 
   # TLP 电源管理
   services = {
-    xserver.videoDrivers = [ "nvidia" ];
+    blueman.enable = true;
+    xserver.videoDrivers = [ "nvidia" "modesetting" ];
     power-profiles-daemon.enable = false;
     tlp = {
       enable = true;

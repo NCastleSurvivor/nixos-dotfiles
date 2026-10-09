@@ -7,11 +7,10 @@
     #wlr.enable = false; # niri 基于 wlroots，使用 wlr 后端
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk # GTK 文件选择器等
-      xdg-desktop-portal-gnome
+      #xdg-desktop-portal-gnome
     ];
     config = {
       common.default = [
-        "gnome"
         "gtk"
       ];
       niri."org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];

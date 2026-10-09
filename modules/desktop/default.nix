@@ -6,5 +6,6 @@
     ./niri.nix
     ./fcitx.nix
     ./xdg-portal.nix
+    ./xwayland-satellite.nix
   ];
 }
