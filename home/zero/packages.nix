@@ -1,0 +1,74 @@
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
+{
+  # ============================================================
+  # 统一软件包组（系统级，所有用户可用）
+  # ============================================================
+  myUnfreePackages = [
+    "wechat"
+    "qq"
+    "unrar"
+    "p7zip"
+  ];
+  environment.systemPackages = with pkgs; [
+    kitty
+    yazi
+    lsof
+    unrar
+    libnotify
+    xdg-utils
+    delta
+
+    #尝试引入 noctalia、mark-shot代替mako、waybar等
+    inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.mark-shot.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    #nh相关
+    nix-output-monitor
+    nvd
+
+    # ----- 基础命令行工具（系统运维必需）-----
+    wget
+    curl
+    git
+    htop
+    ripgrep # 更快的 grep（neovim 插件依赖）
+    fd # 更快的 find（neovim 插件依赖）
+    jq # JSON 处理（waybar 自定义模块依赖）
+    tree
+    man-pages
+    man-pages-posix
+
+    # ----- 别名依赖（environment.shellAliases 中引用）-----
+    eza # ls/ll/la 别名
+    bat # cat 别名
+
+    # ----- 磁盘/文件系统 -----
+    exfatprogs
+    dosfstools
+    parted
+    gptfdisk
+
+    android-tools
+    # ----- 编辑器 -----
+    neovim
+    nodejs
+    python3
+    gapless
+  ];
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    maple-mono.NF-CN-unhinted
+    font-awesome
+    powerline-symbols
+    nerd-fonts.iosevka
+    nerd-fonts.symbols-only
+    sarasa-gothic
+    wqy_zenhei
+    noto-fonts-color-emoji
+  ];
+}

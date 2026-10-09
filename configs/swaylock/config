@@ -1,0 +1,86 @@
+# ============================================================
+# Swaylock Effects 锁屏配置
+# 路径：~/.config/swaylock/config
+# ============================================================
+
+# ===== 截图与特效 =====
+screenshots
+# 模糊效果（半径x标准差）
+effect-blur=7x5
+# 暗角效果（强度:半径）
+effect-vignette=0.5:0.5
+# 缩放效果（可选）
+# effect-scale=0.9
+# 像素化效果（可选，与模糊二选一）
+# effect-pixelate=8
+
+# ===== 时钟 =====
+clock
+timestr=%H:%M:%S
+datestr=%Y-%m-%d %A
+
+# ===== 指示器 =====
+indicator
+indicator-radius=100
+indicator-thickness=8
+ring-color=#89b4fa
+inside-color=#1e1e2e
+line-color=#45475a
+line-uses-inside=false
+
+# ===== 文字 =====
+text-color=#cdd6f4
+font=JetBrainsMono Nerd Font
+font-size=24
+
+# ===== 颜色状态 =====
+# 输入中
+ring-ver-color=#a6e3a1
+inside-ver-color=#1e1e2e
+text-ver-color=#a6e3a1
+
+# 验证中
+ring-clear-color=#f9e2af
+inside-clear-color=#1e1e2e
+text-clear-color=#f9e2af
+
+# 错误
+ring-wrong-color=#f38ba8
+inside-wrong-color=#1e1e2e
+text-wrong-color=#f38ba8
+
+# ===== 布局 =====
+layout=1
+# 布局 1: 单个指示器居中
+# 布局 2: 两个指示器（双屏）
+
+# ===== 行为 =====
+ignore-empty-password
+show-failed-attempts
+show-keyboard-layout
+keyboard-layout=us,cn
+
+# ===== 后台 =====
+# 不使用截图时的纯色背景
+# color=#1e1e2e
+
+# ===== 其他 =====
+# 显示用户头像（需要放置在 ~/.face 或指定路径）
+# image=/home/zero/.face
+# image-size=120
+
+# 禁用鼠标（锁屏时隐藏鼠标）
+# hide-keyboard-layout
+
+# 解锁后不清除密码字段
+# no-unlock-log
+
+# ===== 提示文字 =====
+# 自定义提示
+# hint-color=#6c7086
+# hint-font-size=16
+# hint-text=输入密码解锁
+
+# ===== 多显示器 =====
+# 每个显示器都显示锁屏
+# span-host-screen=false
