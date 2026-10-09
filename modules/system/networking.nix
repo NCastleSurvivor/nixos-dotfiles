@@ -4,12 +4,6 @@
     hostName = "NCastleSurvivor";
     dhcpcd.enable = false;
     useDHCP = false; # 禁用默认 DHCP，由 networkmanager 统一处理
-    wireless.interfaces.wlan0 = {
-        useDHCP = true;
-        dhcpcdSettings = ''
-            noresolv
-            '';
-        };
     networkmanager = {
       enable = true;
       wifi.backend = "iwd";

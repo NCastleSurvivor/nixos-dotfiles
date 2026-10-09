@@ -42,8 +42,8 @@
     };
 
     bluetooth = {
-        enable = true;
-        powerOnBoot = false;
+      enable = true;
+      powerOnBoot = false;
     };
     graphics = {
       enable = true;
@@ -67,7 +67,10 @@
   # TLP 电源管理
   services = {
     blueman.enable = true;
-    xserver.videoDrivers = [ "nvidia" "modesetting" ];
+    xserver.videoDrivers = [
+      "nvidia"
+      "modesetting"
+    ];
     power-profiles-daemon.enable = false;
     tlp = {
       enable = true;
