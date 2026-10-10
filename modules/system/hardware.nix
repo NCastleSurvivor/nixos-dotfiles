@@ -5,14 +5,6 @@
   ...
 }:
 {
-  myUnfreePackages = [
-    "nvidia-vaapi-driver"
-    "nvidia-x11"
-    "nvidia-settings"
-    "nvidia-persistenced"
-    "nvidia-firmware"
-    "broadcom-bt-firmware"
-  ];
   hardware = {
 
     enableRedistributableFirmware = true;
@@ -80,7 +72,7 @@
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
         CPU_BOOST_ON_AC = 1;
         CPU_BOOST_ON_BAT = 0;
-        NVIDIA_SLEEP = "nv";
+        NVIDIA_SLEEP = "nv_drm"; # the old key is nv
         WIFI_PWR_ON_AC = "off";
         WIFI_PWR_ON_BAT = "on";
       };

@@ -4,7 +4,12 @@
     inputs.zen-browser.homeModules.twilight
     inputs.stylix.homeModules.stylix
   ];
-  stylix.targets.zen-browser.profileNames = [ "default" ];
+  stylix = {
+    targets = {
+      zen-browser.profileNames = [ "default" ];
+      nixos-icons.enable = false;
+    };
+  };
   programs.zen-browser = {
     enable = true;
     languagePacks = [ "zh-CN" ];

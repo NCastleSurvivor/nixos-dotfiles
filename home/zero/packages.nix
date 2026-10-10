@@ -5,23 +5,24 @@
   ...
 }:
 {
-myUnfreePackages = [
+  myUnfreePackages = [
     "wechat-uos"
     "qq"
     "p7zip"
     "unrar"
-];
-environment.systemPackages = with pkgs; [
+    "wpsoffice-cn"
+  ];
+  environment.systemPackages = with pkgs; [
     kitty
     yazi
     lsof
     unrar
+    p7zip
     libnotify
     xdg-utils
     delta
 
     wechat-uos
-    unrar
     qq
     #尝试引入 noctalia、mark-shot代替mako、waybar等
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -59,6 +60,26 @@ environment.systemPackages = with pkgs; [
     nodejs
     python3
     gapless
+
+    # about wps and lx-music work in x11 environment
+    # lx-music-desktop：歌词窗口在 Wayland 下损坏，强制 X11 模式
+    (pkgs.writeShellScriptBin "lx-music" ''
+      exec ${pkgs.lx-music-desktop}/bin/lx-music-desktop --ozone-platform=x11 "$@"
+    '')
+
+    # wpsoffice-cn：Qt 应用在 Wayland 下可能有渲染问题，强制 X11
+    (pkgs.writeShellScriptBin "wps" ''
+      exec env QT_QPA_PLATFORM=xcb ${pkgs.wpsoffice-cn}/bin/wps "$@"
+    '')
+    (pkgs.writeShellScriptBin "wpp" ''
+      exec env QT_QPA_PLATFORM=xcb ${pkgs.wpsoffice-cn}/bin/wpp "$@"
+    '')
+    (pkgs.writeShellScriptBin "et" ''
+      exec env QT_QPA_PLATFORM=xcb ${pkgs.wpsoffice-cn}/bin/et "$@"
+    '')
+    (pkgs.writeShellScriptBin "wpp" ''
+      exec env QT_QPA_PLATFORM=xcb ${pkgs.wpsoffice-cn}/bin/wpp "$@"
+    '')
   ];
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono

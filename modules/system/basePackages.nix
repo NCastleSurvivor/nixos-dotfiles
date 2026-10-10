@@ -1,6 +1,12 @@
 { config, pkgs, ... }:
 
 {
+  myUnfreePackages = [
+    "nvidia-vaapi-driver"
+    "nvidia-x11"
+    "nvidia-settings"
+    "nvidia-persistenced"
+  ];
   # 除了 doas.nix外其余移至此处
   environment.systemPackages = with pkgs; [
     alsa-utils # ALSA 底层工具（alsamixer, amixer）
@@ -9,7 +15,7 @@
     #pamixer # 命令行音量控制（waybar 模块用）
     libva-utils
     vdpauinfo
-
+    nvidia-vaapi-driver
     # 电源/温度
     powertop
     smartmontools

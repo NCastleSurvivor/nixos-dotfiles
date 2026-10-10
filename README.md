@@ -1,6 +1,6 @@
 # NCastleSurvivor — NixOS 配置
 
-> Lix + NixOS 26.05 (unstable) + Limine + niri + noctalia + Home Manager + Flake
+> Lix + NixOS 26.05 (unstable) + Limine + niri + noctalia + Home Manager + sops-nix + Flake
 
 ## 系统概览
 
@@ -8,374 +8,197 @@
 |---|---|
 | 主机名 | `NCastleSurvivor` |
 | 用户名 | `zero` |
-| CPU | AMD Ryzen 7 4800H (Renoir) |
-| 显卡 | NVIDIA RTX 2060 + AMD Radeon 核显（双显卡 PRIME offload） |
+| CPU | AMD Ryzen 7 4800H |
+| 显卡 | NVIDIA RTX 2060 + AMD Radeon（PRIME offload） |
 | 网卡 | Intel AX210 (Wi-Fi 6E + BT 5.3) |
-| 磁盘 | 2TB SSD（800M EFI + ~651G / + 1.3T /home） |
-| 文件系统 | XFS（/ 和 /home），VFAT（EFI），支持 NTFS |
-| 内核 | CachyOS Latest（EEVDF+BORE 调度器，LTO 优化） |
-| 引导 | Limine（UEFI removable，不依赖 UEFI 变量） |
-| 桌面 | niri（Wayland 平铺合成器）+ xwayland-satellite |
+| 内核 | CachyOS Latest |
+| 引导 | Limine（UEFI removable） |
+| 桌面 | niri（Wayland）+ xwayland-satellite |
 | 登录 | greetd + tuigreet |
-| 状态栏/通知 | noctalia（一体化 Shell，替代 Waybar + Mako） |
-| 启动器 | Fuzzel |
-| 截图 | mark-shot（区域截图标注） |
-| 终端 | Kitty + Fish Shell |
+| 状态栏/通知 | noctalia |
+| 终端 | Kitty + Fish |
 | 浏览器 | Zen Browser |
-| 编辑器 | Neovim（lazy.nvim + LSP + Telescope） |
-| 输入法 | Fcitx5 + Rime（用户自备配置） |
+| 编辑器 | Neovim（lazy.nvim） |
+| 输入法 | Fcitx5 + Rime |
 | 音频 | PipeWire + WirePlumber |
-| 网络 | NetworkManager + iwd（无线）+ systemd-resolved（DNS） |
+| 网络 | NetworkManager + iwd + systemd-resolved |
 | 特权 | doas（替代 sudo） |
-| 包管理 | Lix（替代 Nix）+ Flake |
-
-> **软件包策略**：最小化原则，仅保留开机、桌面运行、git、neovim 必需软件。统一软件包组在 `home/zero/packages.nix`（系统级，所有用户可用）。其他软件请自行添加。
+| 密码管理 | sops-nix（age 加密） |
+| 包管理 | Lix + Flake |
 
 ---
 
-## 目录结构与各层级说明
+## 目录结构
 
 ```
 nixos-dotfiles/
-├── flake.nix                          # Flake 入口（inputs/outputs）
-├── flake.lock                         # 依赖锁定
-├── configuration.nix                  # 系统主配置（imports 聚合 + 激活脚本）
-├── hardware-configuration.nix         # 硬件配置（分区挂载/内核模块）
-├── README.md                          # 本文档
-├── 修改建议.md                        # 配置审计报告与修改建议
-│
-├── modules/                           # 【NixOS 系统模块层】
-│   ├── system/                        #   系统级模块
-│   │   ├── default.nix                #     聚合：imports 同目录所有模块
-│   │   ├── boot.nix                   #     引导：Limine + 内核 + 内核参数 + initrd
-│   │   ├── hardware.nix               #     硬件：NVIDIA + AMD + 固件 + 电源 + TLP + zram
-│   │   ├── lix.nix                    #     包管理器：Lix + 国内镜像 substituters + 自动 GC
-│   │   ├── doas.nix                   #     特权管理：doas 替代 sudo + sudo 兼容包装
-│   │   ├── networking.nix             #     网络：NetworkManager + iwd + 防火墙 + 蓝牙 + DNS
-│   │   ├── audio.nix                  #     音频：PipeWire + WirePlumber + 音质优化
-│   │   ├── services.nix               #     系统服务：seatd/udisks2/upower/polkit/journald
-│   │   ├── environment-Settings.nix   #     全局环境变量（EDITOR/BROWSER/PAGER 等）
-│   │   ├── basePackages.nix           #     系统级基础软件包（硬件工具/网络诊断/电源管理）
-│   │   ├── i18n.nix                   #     国际化：时区/语言/键盘/NTP 服务器
-│   │   └── users.nix                  #     用户配置：zero 用户 + fish shell + 密码
-│   │
-│   └── desktop/                       #   桌面环境模块
-│       ├── default.nix                #     聚合
-│       ├── greetd.nix                 #     登录管理器：greetd + tuigreet
-│       ├── niri.nix                   #     合成器：niri + Wayland 环境变量 + 桌面工具
-│       ├── fcitx.nix                  #     输入法：fcitx5 + rime
-│       ├── xdg-portal.nix             #     XDG 桌面门户：文件选择器/截图
-│       └── xwayland-satellite.nix     #     X11 兼容：独立 rootless XWayland 进程
-│
-├── home/                              # 【Home Manager 用户配置层】
-│   └── zero/                          #   用户 zero
-│       ├── default.nix                #     Home Manager 入口（用户信息 + 激活脚本）
-│       ├── packages.nix               #     ★ 统一软件包组（environment.systemPackages，系统级）
-│       ├── shell.nix                  #     fish Shell 配置（别名/函数/vi 键绑定/问候语）
-│       ├── programs.nix               #     Git 配置（用户信息/别名/delta）
-│       ├── config-files.nix           #     配置文件映射（configs/ → ~/.config/）+ 字体
-│       ├── nh.nix                     #     nh 工具配置（flake 路径 + 自动清理）
-│       ├── noctalia.nix               #     noctalia 桌面 Shell 配置（bar/通知/控制中心）
-│       └── zen-browser.nix            #     Zen Browser 配置（策略/语言/Stylix 主题）
-│
-├── configs/                           # 【软件原始配置层】
-│   ├── niri/                          #   niri 合成器（config.kdl + 壁纸）
-│   ├── fuzzel/                        #   fuzzel 应用启动器
-│   ├── kitty/                         #   kitty 终端
-│   ├── fastfetch/                     #   fastfetch 系统信息展示
-│   ├── nvim/                          #   neovim 编辑器（lazy.nvim 配置）
-│   ├── rime/                          #   rime 输入法配置（映射到 ~/.local/share/fcitx5/rime/）
-│   ├── waybar/                        #   【已停用】waybar 状态栏（保留供参考，未映射）
-│   ├── mako/                          #   【已停用】mako 通知（保留供参考，未映射）
-│   └── swaylock/                      #   【已停用】swaylock 锁屏（保留供参考，未映射）
+├── flake.nix                    # Flake 入口
+├── configuration.nix            # 系统主配置 + unfree 白名单
+├── hardware-configuration.nix   # 硬件配置（勿手改，由 nixos-generate-config 生成）
+├── .sops.yaml                   # sops 加密规则（公钥）
+├── secrets/
+│   └── secrets.yaml             # 加密的用户密码哈希
+├── modules/
+│   ├── system/                  # 系统模块（boot/hardware/network/audio/users/sops...）
+│   └── desktop/                 # 桌面模块（niri/greetd/fcitx/xwayland...）
+├── home/zero/                   # Home Manager 用户配置
+│   ├── packages.nix             # 统一软件包组（系统级 environment.systemPackages）
+│   ├── shell.nix                # Fish 配置
+│   ├── programs.nix             # Git 配置
+│   ├── config-files.nix         # 配置文件映射（configs/ → ~/.config/）
+│   ├── noctalia.nix             # noctalia 桌面 Shell
+│   └── zen-browser.nix          # Zen Browser
+└── configs/                     # 软件原始配置（niri/kitty/nvim/rime...）
 ```
 
 ---
 
-## 安装指南
+## 快速部署
 
-### 前置准备
-
-1. 下载 NixOS 26.05 unstable Live ISO
-2. 制作启动 U 盘，从 U 盘启动
-3. 确认磁盘分区：800M EFI + ~651G / + 1.3T /home（均已预划分，XFS 文件系统）
-
-### 分区与挂载
+### 1. 分区与挂载
 
 ```bash
-# 假设 EFI 分区为 /dev/nvme0n1p1，/ 为 /dev/nvme0n1p2，/home 为 /dev/nvme0n1p3
-# 实际盘符可能不同，请用 lsblk 确认，用 UUID 挂载避免盘符随机变化
-
-# 格式化（如尚未格式化）
-mkfs.vfat -F 32 /dev/nvme0n1p1
-mkfs.xfs /dev/nvme0n1p2
-mkfs.xfs /dev/nvme0n1p3
-
-# 挂载
-mount /dev/nvme0n1p2 /mnt
+# 用 lsblk 确认盘符，用 UUID 挂载
+mount /dev/disk/by-uuid/<根分区UUID> /mnt
 mkdir -p /mnt/boot /mnt/home
-mount /dev/nvme0n1p1 /mnt/boot
-mount /dev/nvme0n1p3 /mnt/home
+mount /dev/disk/by-uuid/<EFIPartitionUUID> /mnt/boot
+mount /dev/disk/by-uuid/<HomePartitionUUID> /mnt/home
 ```
 
-### 部署配置
+### 2. 生成硬件配置
 
 ```bash
-# 1. 将配置复制到 home 分区（配置永久存放在 home 分区）
-mkdir -p /mnt/home/zero/nixos-config
-cp -r /path/to/NCastleSurvivor-nixos/* /mnt/home/zero/nixos-config/
-
-# 2. 生成 hardware-configuration.nix（覆盖现有文件）
 nixos-generate-config --root /mnt
-# 生成的文件在 /mnt/etc/nixos/hardware-configuration.nix
-# 将其复制到配置目录替换：
-cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/zero/nixos-config/
+cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/zero/nixos-configuration/
+```
 
-# 3. 创建 /etc/nixos 符号链接指向 home 分区配置
-ln -sfn /mnt/home/zero/nixos-config /mnt/etc/nixos
+### 3. 配置 sops-nix 密码（首次部署）
 
-# 4. 设置用户密码哈希（参考 modules/system/users.nix 中的 hashedPassword）
-#    生成方法：nix run nixpkgs#mkpasswd -- --method=yescrypt
-#    将输出填入 modules/system/users.nix 的 hashedPassword 字段
+```bash
+# 进入工具环境
+nix-shell -p sops age ssh-to-age mkpasswd
 
-# 5. 安装系统
+# 生成密码哈希
+mkpasswd --method=yescrypt
+# Password: <你的密码>
+# 输出：$y$j9T$...（复制备用）
+
+# 获取主机 SSH 公钥（转 age 格式）
+ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
+# → age1主机公钥...
+
+# 生成个人 age 密钥对
+mkdir -p ~/.config/sops/age
+age-keygen -o ~/.config/sops/age/keys.txt
+# → age1个人公钥...
+
+# 编辑 .sops.yaml，填入上面两个公钥
+nano .sops.yaml
+
+# 创建明文秘密文件并加密
+mkdir -p secrets
+echo 'zero_password: "$y$j9T$你的哈希"' > secrets/secrets.yaml
+export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
+sops -e -i secrets/secrets.yaml
+
+# 验证
+sops -d secrets/secrets.yaml
+```
+
+### 4. 安装
+
+```bash
+ln -sfn /mnt/home/zero/nixos-configuration /mnt/etc/nixos
 nixos-install --flake .#NCastleSurvivor --substituters https://mirror.sjtu.edu.cn/nix-channels/store --impure
-
-# 6. 重启
 reboot
 ```
 
-### 首次登录后
+### 5. 首次登录后
 
 ```bash
-# 1. 验证系统
+# 验证
 nix-shell -p nix-info --run "nix-info -m"
-echo $XDG_SESSION_TYPE  # 应输出 wayland
-nvidia-smi               # 查看 NVIDIA 状态
+echo $XDG_SESSION_TYPE   # wayland
+nvidia-smi
 
-# 2. 部署 Rime：将自备的 rime 配置放入 configs/rime/，然后
+# 部署 Rime 配置后重载
 fcitx5-remote -r
-# 按 F4 切换输入方案
-
-# 3. 打开 nvim，lazy.nvim 自动安装插件
-nvim
-
-# 4. 放置壁纸到 ~/.config/niri/wallhaven/wall.jpg（niri 配置中引用此路径）
 ```
 
 ---
 
-## 配置文件映射机制
+## sops-nix 密码管理
 
-### 映射原理
+### 原理
 
-所有软件配置文件（niri、fuzzel、kitty、nvim、fastfetch 等）存放在仓库的 `configs/` 目录下，通过 **Home Manager** 的 `xdg.configFile` 选项以递归目录映射到用户的 `~/.config/` 目录。
+用户密码哈希通过 [age](https://github.com/FiloSottile/age) 加密存储在 `secrets/secrets.yaml`，可安全提交到 git。系统激活时用主机 SSH 私钥解密到 `/run/secrets-for-users/`。
 
-映射定义在 `home/zero/config-files.nix` 中：
+### 密钥说明
 
-```nix
-xdg.configFile = {
-  "niri"   = { source = "${configsDir}/niri";   force = true; recursive = true; };
-  "fuzzel" = { source = "${configsDir}/fuzzel"; force = true; recursive = true; };
-  "kitty"  = { source = "${configsDir}/kitty";  force = true; recursive = true; };
-  "nvim"   = { source = "${configsDir}/nvim";   force = true; recursive = true; };
-  # waybar / mako / swaylock 已停用（由 noctalia 替代），配置保留供参考
-};
+| 密钥 | 位置 | 作用 |
+|------|------|------|
+| 主机 ed25519 私钥 | `/etc/ssh/ssh_host_ed25519_key` | `nixos-rebuild` 时解密秘密 |
+| 主机 ed25519 公钥（转 age） | `.sops.yaml` | 加密时使用，仅本主机可解密 |
+| 个人 age 私钥 | `~/.config/sops/age/keys.txt` | 日常编辑秘密文件时解密 |
+| 个人 age 公钥 | `.sops.yaml` | 加密时使用，让你能在任意机器编辑 |
 
-# fcitx5-rime 数据映射到 ~/.local/share/fcitx5/rime/
-xdg.dataFile."fcitx5/rime" = { source = "${configsDir}/rime"; force = true; recursive = true; };
-```
-
-### 修改现有配置文件
+### 日常操作
 
 ```bash
-# 1. 编辑仓库中的源文件
-nvim /home/zero/nixos-config/configs/kitty/kitty.conf
+export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 
-# 2. 重新构建并应用
-doas nixos-rebuild switch --flake /home/zero/nixos-config#NCastleSurvivor
+# 查看密码哈希
+sops -d --extract '["zero_password"]' secrets/secrets.yaml
 
-# 3. 部分软件支持热重载
-#    niri:    Mod+Shift+R（重载配置）
-#    kitty:   kitty @ set-colors --all --configured ~/.config/kitty/kitty.conf
-```
+# 修改密码（自动解密→编辑器→重新加密）
+sops secrets/secrets.yaml
 
-### 新增配置文件
-
-```bash
-# 1. 在 configs/ 下创建新目录和配置文件
-mkdir -p /home/zero/nixos-config/configs/alacritty
-nvim /home/zero/nixos-config/configs/alacritty/alacritty.toml
-
-# 2. 在 home/zero/config-files.nix 的 xdg.configFile 中添加映射
-#    "alacritty/alacritty.toml".source = "${configsDir}/alacritty/alacritty.toml";
-
-# 3. 如需安装软件，在 home/zero/packages.nix（统一包组）或对应模块中添加
-
-# 4. 重新构建
-doas nixos-rebuild switch --flake /home/zero/nixos-config#NCastleSurvivor
-```
-
-> 注意：映射到 `~/.config/` 的文件是只读的，必须修改仓库 `configs/` 中的源文件。
-
----
-
-## 日常使用命令
-
-### 系统管理
-
-```bash
-cd /home/zero/nixos-config  # 或 cd /etc/nixos
-
-# 重建系统 + 用户配置
+# 修改后重新构建
 doas nixos-rebuild switch --flake .#NCastleSurvivor
 
-# 测试配置（不切换）
-doas nixos-rebuild test --flake .#NCastleSurvivor
-
-# 仅构建，下次启动生效
-doas nixos-rebuild boot --flake .#NCastleSurvivor
-
-# 更新 flake 输入（nixpkgs、home-manager、内核等）
-nix flake update
-
-# 清理旧世代（释放空间）
-doas nix-collect-garbage -d
-
-# 格式化所有 .nix 文件
-nix fmt
+# 添加新机器解密权限
+# 1. 在 .sops.yaml 中添加新机器 age 公钥
+# 2. 重新加密：sops updatekeys secrets/secrets.yaml
 ```
 
-### 网络管理
+### 重装/换电脑
 
 ```bash
-# 查看网络状态
-ip addr
-nmcli device status    # NetworkManager 设备状态
-nmcli connection show  # 已保存的连接
+# 旧电脑：备份主机密钥和个人密钥
+doas cp /etc/ssh/ssh_host_ed25519_key* backup/
+cp ~/.config/sops/age/keys.txt backup/
 
-# WiFi 管理（NetworkManager + iwd 后端）
-nmcli device wifi list          # 扫描附近 WiFi
-nmcli device wifi connect "SSID" password "密码"  # 连接 WiFi
-
-# 或使用 iwctl 直接管理 iwd
-iwctl station wlan0 scan
-iwctl station wlan0 get-networks
-iwctl station wlan0 connect "SSID"
-
-# DNS（systemd-resolved）
-resolvectl status     # 查看 DNS 解析状态
-
-# 蓝牙
-blueman-manager  # 图形界面
-bluetoothctl     # 命令行
-```
-
-### 音量/亮度
-
-```bash
-# 音量（PipeWire）
-wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
-wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-
-# 亮度
-brightnessctl set +5%
-brightnessctl set 5%-
+# 新电脑：恢复密钥后即可正常解密构建
+doas cp backup/ssh_host_ed25519_key* /etc/ssh/
+cp backup/keys.txt ~/.config/sops/age/
 ```
 
 ---
 
-## 国内软件源
+## 非自由软件管理
 
-### Lix substituters（二进制缓存）
+使用 `allowUnfreePredicate` 白名单替代全局 `allowUnfree = true`。各模块通过 `myUnfreePackages` 选项声明所需的非自由包，自动合并。
 
-在 `modules/system/lix.nix` 中配置，当前包含：
+当前白名单：
 
-| 镜像站 | URL | 说明 |
-|---|---|---|
-| 上海交大 | `https://mirror.sjtu.edu.cn/nix-channels/store` | SJTU 二进制缓存 |
-| 兰州大学 | `https://mirrors.lzu.edu.cn/nix-channels/store` | LZU 二进制缓存 |
-| Lantian Attic | `https://attic.xuyh0120.win/lantian` | 第三方 Attic 私有缓存 |
-| 官方缓存 | `https://cache.nixos.org/` | NixOS 官方二进制缓存 |
+| 包名 | 用途 | 声明文件 |
+|------|------|----------|
+| `qq` | 腾讯 QQ | `home/zero/packages.nix` |
+| `wechat-uos` | 微信 | `home/zero/packages.nix` |
+| `unrar` | RAR 解压 | `home/zero/packages.nix` |
+| `nvidia-x11` | NVIDIA 驱动 | `modules/system/hardware.nix` |
+| `nvidia-settings` | NVIDIA 设置面板 | `modules/system/hardware.nix` |
 
-> 多个 substituters 同时配置，Lix 会自动从最快的源下载。如某源限速或拉黑 IP，可在 `lix.nix` 中注释掉对应 URL。
 
-### nixpkgs 源码镜像
-
-如需加速 `nix flake update`，可在 `flake.nix` 中将 nixpkgs 输入改为国内镜像 tarball：
-
-```nix
-# 中科大
-nixpkgs.url = "https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable.tar.xz";
-# 清华大学
-nixpkgs.url = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable.tar.xz";
-```
-
-> 注意：使用 tarball 后无法用 `follows` 联动，home-manager 需独立指定 nixpkgs。
 
 ---
 
-## 需要修改/注意的地方
+## 需要修改的项
 
-### 必须修改
+| 文件 | 需更改项 |
+|------|----------|
+| `hardware-configuration.nix` | 分区 UUID（用 `nixos-generate-config` 生成） |
+| `modules/system/hardware.nix` | `amdgpuBusId` / `nvidiaBusId`（用 `lspci` 确认） |
+| `home/zero/programs.nix` | Git 用户名和邮箱 |
+| `secrets/secrets.yaml` | 用自己的密码哈希重新加密 |
 
-| 文件 | 需更改项 | 说明 |
-|---|---|---|
-| `modules/system/users.nix` | `users.users.zero.hashedPassword` | **必须修改**。当前为硬编码哈希（yescrypt 格式），需生成自己的密码哈希。生成方法：`nix run nixpkgs#mkpasswd -- --method=yescrypt` |
-| `hardware-configuration.nix` | 分区 UUID | **必须用系统生成的替换**。执行 `nixos-generate-config --root /mnt` 生成，确保 UUID 与实际分区匹配 |
-| `modules/system/hardware.nix` | `amdgpuBusId` / `nvidiaBusId` | **必须确认**。用 `lspci` 查看实际 PCI 地址，当前为示例值 `PCI:6:0:0` 和 `PCI:1:0:0` |
-| `configuration.nix` / `nh.nix` | 配置目录路径 | 代码中使用 `/home/zero/nixos-configuration`，本文档使用 `/home/zero/nixos-config`，**必须统一**。建议统一为 `nixos-config` |
-
-### 建议修改
-
-| 文件 | 需更改项 | 说明 |
-|---|---|---|
-| `home/zero/programs.nix` | `programs.git.user.name` / `user.email` | 建议修改为实际 Git 用户名和邮箱 |
-| `configs/niri/config.kdl` | 壁纸路径、输出配置 | 壁纸位于 `~/.config/niri/wallhaven/wall.jpg`；输出配置（分辨率、缩放、位置）需根据实际显示器调整 |
-| `modules/system/services.nix` | polkit 代理可执行文件名 | 当前存在拼写错误 `pokit-gnome-...`，需修正为 `polkit-gnome-...`，否则图形认证弹窗无法启动 |
-
-### 可选修改
-
-| 文件 | 需更改项 | 说明 |
-|---|---|---|
-| `home/zero/packages.nix` | `environment.systemPackages` | 统一软件包组（系统级），添加/删除软件在此处 |
-| `modules/system/environment-Settings.nix` | `environment.sessionVariables` | 全局环境变量（EDITOR/BROWSER/PAGER 等） |
-| `modules/system/basePackages.nix` | `environment.systemPackages` | 系统级基础工具包（硬件诊断/网络工具/电源管理） |
-| `home/zero/shell.nix` | `programs.fish` | Fish Shell 配置（别名、函数、vi 键绑定、问候语） |
-| `home/zero/config-files.nix` | `xdg.configFile` | 配置文件映射，添加新软件配置在此处 |
-| `modules/system/lix.nix` | `nix.settings.substituters` | 国内镜像源，可按需增删 |
-| `configs/kitty/kitty.conf` | 字体大小、配色 | 可根据显示器分辨率和个人喜好调整 |
-
----
-
-## 重要注意事项
-
-1. **盘符随机变化**：Limine 使用 `efiInstallAsRemovable = true`，安装到 EFI 分区的 `/EFI/BOOT/BOOTX64.EFI`，不依赖 UEFI 启动项变量。分区挂载使用 UUID（在 `hardware-configuration.nix` 中），不受盘符变化影响。
-
-2. **配置文件存放在 home 分区**：通过 `system.activationScripts` 自动创建 `/etc/nixos` → `/home/zero/nixos-config` 符号链接。更换/升级系统时不格式化 home 分区，配置永久保留。
-
-3. **doas 替代 sudo**：系统未安装 sudo，所有特权命令使用 `doas`。如习惯 sudo，可在 `home/zero/shell.nix` 中添加 `alias sudo=doas`（已配置）。
-
-4. **NVIDIA PRIME offload**：日常使用 AMD 核显输出，NVIDIA 用于高性能渲染。运行 NVIDIA 程序需加环境变量：
-   ```bash
-   __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia zen-browser
-   ```
-
-5. **xwayland-satellite**：X11 程序通过独立的 rootless XWayland 进程运行，在 niri 配置中通过 `spawn-at-startup "xwayland-satellite"` 自启，同时 `modules/desktop/xwayland-satellite.nix` 提供 systemd 用户服务管理。
-
-6. **Rime 配置**：用户自备配置放在 `configs/rime/`，映射到 `~/.local/share/fcitx5/rime/`。修改后执行 `fcitx5-remote -r` 重新加载。
-
-7. **NTFS 支持**：内核内置 `ntfs3` 驱动（性能优于 ntfs-3g），`boot.supportedFilesystems` 包含 `"ntfs"`。
-
-8. **noctalia 一体化桌面 Shell**：状态栏、通知、控制中心均由 noctalia 提供（替代原 Waybar + Mako 方案）。配置在 `home/zero/noctalia.nix` 中。
-
-9. **配置审计报告**：完整的三轮审计结果和修改建议见 `修改建议.md`，包含 24 项发现（6 项严重、10 项中等、8 项轻微）。
-
----
-
-## 相关文档
-
-- `修改建议.md` — 配置仓库三轮审计报告（语法结构 / 逻辑一致性 / 安全最佳实践），含 24 项发现与修复优先级
-- `configs/nvim/README.md` — Neovim 配置说明
-- `configs/rime/others/CHANGELOG.md` — Rime 输入法配置变更日志

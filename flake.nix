@@ -6,7 +6,7 @@
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      #inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
@@ -49,6 +49,7 @@
       nixpkgs,
       home-manager,
       nix-cachyos-kernel,
+      sops-nix,
       ...
     }@inputs:
     let
@@ -65,7 +66,7 @@
           modules = [
             # 配置文件在仓库根目录
             ./configuration.nix
-            inputs.sops-nix.nixosModules.sops
+            sops-nix.nixosModules.sops
             # Home Manager 作为 NixOS 模块
             inputs.home-manager.nixosModules.home-manager
             inputs.stylix.nixosModules.stylix
