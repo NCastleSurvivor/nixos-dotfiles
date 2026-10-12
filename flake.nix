@@ -4,10 +4,14 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      #inputs.nixpkgs.follows = "nixpkgs";
-    };
+    #sops-nix = {
+    #  url = "github:Mic92/sops-nix";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
+    agenix = {
+            url = "github:ryantm/agenix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -49,7 +53,7 @@
       nixpkgs,
       home-manager,
       nix-cachyos-kernel,
-      sops-nix,
+      agenix,
       ...
     }@inputs:
     let
@@ -66,7 +70,8 @@
           modules = [
             # 配置文件在仓库根目录
             ./configuration.nix
-            sops-nix.nixosModules.sops
+            #sops-nix.nixosModules.sops  #can`t connecting to proxy.golang.org ; so that exchange to agenix
+            agenix.nixosModules.default
             # Home Manager 作为 NixOS 模块
             inputs.home-manager.nixosModules.home-manager
             inputs.stylix.nixosModules.stylix

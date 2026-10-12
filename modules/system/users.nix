@@ -13,7 +13,7 @@
         "audio"
       ];
       shell = pkgs.fish;
-      hashedPasswordFile = config.sops.secrets.zero_password.path;
+      hashedPasswordFile = config.age.secrets.zero_password.path;
     };
   };
 }

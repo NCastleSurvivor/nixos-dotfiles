@@ -62,6 +62,8 @@
     gapless
 
     # about wps and lx-music work in x11 environment
+    go-musicfox
+    wpsoffice-cn
     # lx-music-desktop：歌词窗口在 Wayland 下损坏，强制 X11 模式
     (pkgs.writeShellScriptBin "lx-music" ''
       exec ${pkgs.lx-music-desktop}/bin/lx-music-desktop --ozone-platform=x11 "$@"

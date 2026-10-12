@@ -19,7 +19,7 @@
         "nix-command"
         "flakes"
       ];
-
+      sandbox = "relaxed";
       # 自动优化 nix store（硬链接去重）
       auto-optimise-store = true;
 
@@ -36,16 +36,18 @@
       # ============================================================
       # 国内二进制缓存镜像（substituters）
       # ============================================================
-      substituters = [
+      extra-substituters = [
         "https://mirror.sjtu.edu.cn/nix-channels/store"
         "https://mirrors.lzu.edu.cn/nix-channels/store"
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://attic.xuyh0120.win/lantian"
         "https://cache.nixos.org/"
+        "https://cache.thalheim.io"
       ];
 
-      trusted-public-keys = [
+      extra-trusted-public-keys = [
         "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+        "cache.thalheim.io-1:R7msbosLEZKrxk/lKxf9BTjOOH7Ax3H0Qj0/6wiHOgc="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
     };
@@ -68,6 +70,11 @@
   # ============================================================
   # 系统级 nix 工具
   # ============================================================
+  systemd.services.nix-daemon.environment = {
+  GOPROXY = "https://goproxy.cn,direct";
+  GOSUMDB = "sum.golang.google.cn";
+};
+
   environment.systemPackages = with pkgs; [
     nixfmt-tree # nix 代码格式化
     nix-diff # 对比两个 derivation 差异

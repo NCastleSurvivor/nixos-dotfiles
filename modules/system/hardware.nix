@@ -58,7 +58,7 @@
 
   # TLP 电源管理
   services = {
-    blueman.enable = true;
+    blueman.enable = false;
     xserver.videoDrivers = [
       "nvidia"
       "modesetting"

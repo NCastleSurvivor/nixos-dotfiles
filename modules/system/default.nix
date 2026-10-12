@@ -14,6 +14,6 @@
     ./users.nix
     ./basePackages.nix
     ./ssh.nix
-    ./sops.nix
+    ./age.nix
   ];
 }
