@@ -57,6 +57,8 @@
       gd = "git diff";
       gf = "git fetch";
 
+      bilibili = "zen-twilight https://www.bilibili.com";
+
     };
 
     # 交互式配置

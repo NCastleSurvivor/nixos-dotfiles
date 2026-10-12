@@ -12,7 +12,7 @@
 
       location = {
             auto_locate = false;
-            address = "suzhou, China";
+            address = "suzhou, JiangSu, China";
     };
       weather = {
             enabled = true;
