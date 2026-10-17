@@ -34,12 +34,12 @@
             "223.5.5.5"
             "1.1.1.1#one.one.one.one"
             "119.29.29.29"
-            "8.8.8.8#dns.google"
           ];
           FallbackDNS = [
             "1.0.0.1#one.one.one.one"
             "8.8.4.4#dns.google"
             "114.114.114.114"
+            "8.8.8.8#dns.google"
           ];
           Domains = [ "~." ];
           DNSOverTLS = "opportunistic";

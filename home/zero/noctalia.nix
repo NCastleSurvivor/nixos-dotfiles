@@ -11,15 +11,15 @@
       };
 
       location = {
-            auto_locate = false;
-            address = "suzhou, JiangSu, China";
-    };
+        auto_locate = false;
+        address = "suzhou, JiangSu, China";
+      };
       weather = {
-            enabled = true;
-            refresh_minutes = 30;
-            unit = "metric";
-            effects = true;
-        };
+        enabled = true;
+        refresh_minutes = 30;
+        unit = "metric";
+        effects = true;
+      };
       bar = {
         position = "top";
         height = 36;
@@ -78,16 +78,23 @@
         per_monitor_directories = false;
 
         default = {
-                path = "/home/zero/Pictures/Wallpapers/default.jpg";
-            };
+          path = "/home/zero/Pictures/Wallpapers/default.jpg";
+        };
 
         automation = {
-                enabled = true;
-                interval_seconds = 300;
-                order = "random";
-                recursive = false;
-            };
-        transition = [ "fade" "wipe" "disc" "stripes" "zoom" "honeycomb" ];
+          enabled = true;
+          interval_seconds = 300;
+          order = "random";
+          recursive = false;
+        };
+        transition = [
+          "fade"
+          "wipe"
+          "disc"
+          "stripes"
+          "zoom"
+          "honeycomb"
+        ];
         transition_duration = 1500;
         transition_on_startup = false;
       };

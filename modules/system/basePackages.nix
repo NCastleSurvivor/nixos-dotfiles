@@ -3,8 +3,6 @@
 {
   myUnfreePackages = [
     "nvidia-vaapi-driver"
-    "nvidia-x11"
-    "nvidia-settings"
     "nvidia-persistenced"
   ];
   # 除了 doas.nix外其余移至此处

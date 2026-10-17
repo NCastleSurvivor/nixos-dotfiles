@@ -8,6 +8,15 @@
   # ============================================================
   # Lix 包管理器（替代 Nix）
   # ============================================================
+  nixpkgs.overlays = [
+    (self: super: {
+      lix = super.lix.overrideAttrs (oldAttrs: {
+        mesonFlags = builtins.filter (flag: !(builtins.match ".*mimalloc.*" flag != null)) (
+          oldAttrs.mesonFlags or [ ]
+        );
+      });
+    })
+  ];
   nix = {
     package = pkgs.lix;
 
@@ -71,9 +80,9 @@
   # 系统级 nix 工具
   # ============================================================
   systemd.services.nix-daemon.environment = {
-  GOPROXY = "https://goproxy.cn,direct";
-  GOSUMDB = "sum.golang.google.cn";
-};
+    GOPROXY = "https://goproxy.cn,direct";
+    GOSUMDB = "sum.golang.google.cn";
+  };
 
   environment.systemPackages = with pkgs; [
     nixfmt-tree # nix 代码格式化

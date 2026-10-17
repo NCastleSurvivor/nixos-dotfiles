@@ -9,9 +9,9 @@
     #  inputs.nixpkgs.follows = "nixpkgs";
     #};
     agenix = {
-            url = "github:ryantm/agenix";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -31,7 +31,7 @@
     };
 
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -84,7 +84,7 @@
 
               home-manager = {
                 extraSpecialArgs = { inherit inputs configsDir; };
-                useGlobalPkgs = true;
+                useGlobalPkgs = false;
                 useUserPackages = true;
                 users.zero = import ./home/zero/default.nix;
               };

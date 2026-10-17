@@ -79,9 +79,6 @@
     (pkgs.writeShellScriptBin "et" ''
       exec env QT_QPA_PLATFORM=xcb ${pkgs.wpsoffice-cn}/bin/et "$@"
     '')
-    (pkgs.writeShellScriptBin "wpp" ''
-      exec env QT_QPA_PLATFORM=xcb ${pkgs.wpsoffice-cn}/bin/wpp "$@"
-    '')
   ];
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
