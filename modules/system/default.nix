@@ -1,19 +1,19 @@
-# 系统模块聚合 — 自动引入本目录下所有模块
+# 系统模块聚合
 { ... }:
 {
   imports = [
     ./boot.nix
     ./hardware.nix
+    ./power.nix
     ./lix.nix
-    ./doas.nix
     ./networking.nix
     ./audio.nix
-    ./services.nix
-    ./environment-Settings.nix
+
+    ./packages
+    ./security
+    ./services
+
+    ./environment.nix
     ./i18n.nix
-    ./users.nix
-    ./basePackages.nix
-    ./ssh.nix
-    ./age.nix
   ];
 }

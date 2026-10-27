@@ -1,13 +1,9 @@
 {
-  description = "NCastleSurvivor — Lix + NixOS 26.05 + niri + Home Manager Flake";
+  description = "NCastleSurvivor — Lix + NixOS 26.05 baseline + niri + Home Manager Flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    #sops-nix = {
-    #  url = "github:Mic92/sops-nix";
-    #  inputs.nixpkgs.follows = "nixpkgs";
-    #};
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,9 +21,7 @@
 
     nix-cachyos-kernel = {
       url = "github:xddxdd/nix-cachyos-kernel";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     noctalia = {
@@ -44,16 +38,12 @@
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      home-manager,
-      nix-cachyos-kernel,
-      agenix,
       ...
     }@inputs:
     let
@@ -68,23 +58,20 @@
             inherit inputs configsDir;
           };
           modules = [
-            # 配置文件在仓库根目录
             ./configuration.nix
-            #sops-nix.nixosModules.sops  #can`t connecting to proxy.golang.org ; so that exchange to agenix
-            agenix.nixosModules.default
-            # Home Manager 作为 NixOS 模块
+            inputs.agenix.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.stylix.nixosModules.stylix
             {
-              # CachyOS 内核 overlay（提供 pkgs.cachyosKernels.linuxPackages-cachyos-*）
-              # 使用 pinned overlay 确保二进制缓存命中（与 release 分支匹配）
+              # CachyOS 内核 overlay；pinned 版本用于命中二进制缓存。
               nixpkgs.overlays = [
                 inputs.nix-cachyos-kernel.overlays.pinned
               ];
 
               home-manager = {
                 extraSpecialArgs = { inherit inputs configsDir; };
-                useGlobalPkgs = false;
+                # 统一使用系统 nixpkgs，使 unfree predicate、overlay 和包版本一致。
+                useGlobalPkgs = true;
                 useUserPackages = true;
                 users.zero = import ./home/zero/default.nix;
               };
@@ -93,7 +80,6 @@
         };
       };
 
-      # 格式化工具
       formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
     };
 }

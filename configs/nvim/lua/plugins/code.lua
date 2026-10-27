@@ -1,6 +1,5 @@
 return {
     -- disable todo-comments
-    { "LongwayBai/Mark--KarKat" },
     { "gcmt/wildfire.vim" },
     {
         "nvim-treesitter/nvim-treesitter",
@@ -90,12 +89,12 @@ return {
         "iamcco/markdown-preview.nvim",
         config = function()
             vim.cmd([[do FileType]])
-            vim.g.mkdp_open_to_the_world = 1
-            vim.g.mkdp_open_ip = ''
+            vim.g.mkdp_open_to_the_world = 0
+            vim.g.mkdp_open_ip = '127.0.0.1'
             vim.g.mkdp_port = '7100'
-            vim.g.mkdp_browser = 'google-chrome'
+            vim.g.mkdp_browser = 'zen-twilight'
             vim.g.mkdp_echo_preview_url = 1
-            vim.g.mkdp_auto_start = 1
+            vim.g.mkdp_auto_start = 0
             vim.g.mkdp_combine_preview = 1
             vim.g.mkdp_combine_preview_auto_refresh = 1
         end,

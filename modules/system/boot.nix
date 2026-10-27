@@ -38,8 +38,7 @@
       "nvidia_drm.modeset=1"
       "nvidia_drm.fbdev=1"
       "module_blacklist=nouveau"
-      "nouveau.modeset=0"
-      # AMD GPU 修复
+      # AMD GPU 修复（仅在该平台需要时保留）
       "amdgpu.sg_display=0"
 
       # CachyOS 内核优化
@@ -61,8 +60,6 @@
       ];
       systemd.initrdBin = with pkgs; [
         openssl
-        libbpf
-        libxcrypt
       ];
     };
     blacklistedKernelModules = [ "ucsi_ccg" ];

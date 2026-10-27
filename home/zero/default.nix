@@ -1,25 +1,26 @@
 {
-  config,
-  pkgs,
   lib,
   ...
 }:
 {
   imports = [
-    # packages.nix 已提升为 NixOS 系统模块（environment.systemPackages），
-    # 在 configuration.nix 中直接 import，不再作为 Home Manager 模块导入。
+    # 系统级软件包已移到 modules/system/packages；
+    # 这里只保留 Home Manager 用户级配置。
     ./shell.nix
-    ./config-files.nix
-    ./programs.nix
+    ./git.nix
     ./nh.nix
-    ./noctalia.nix
-    ./zen-browser.nix
+    ./xdg.nix
+    ./rime.nix
+    ./fonts.nix
+    ./desktop/noctalia.nix
+    ./desktop/zen-browser.nix
   ];
 
   # ===== 用户基本信息 =====
   home = {
     username = "zero";
     homeDirectory = "/home/zero";
+    # 保持安装时的兼容基线；新装机再考虑 26.11。
     stateVersion = "26.05";
 
     sessionVariables = {
@@ -30,14 +31,11 @@
 
     # 激活时执行的命令
     activation = {
-      # 确保用户目录存在
       createDirectories = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         $DRY_RUN_CMD mkdir -p $HOME/{Downloads,Documents,Music,Pictures,Videos,Projects,Workspace}
       '';
     };
   };
 
-  # ===== Home Manager  =====
   programs.home-manager.enable = true;
-
 }

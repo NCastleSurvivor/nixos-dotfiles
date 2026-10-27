@@ -1,16 +1,15 @@
-{ config, pkgs, ... }:
+{ ... }:
 {
   # ============================================================
-  # 全局环境变量与 Shell 别名
+  # 全局环境变量
   # 软件包已整合至 home/zero/packages.nix（environment.systemPackages）。
   # ============================================================
 
-  # ===== 全局环境变量 =====
   environment.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "nvim";
-    BROWSER = "chromium";
-    #TERM = "xterm-kitty";
+    # Zen Browser（twilight 分支）的可执行文件名为 zen-twilight。
+    BROWSER = "zen-twilight";
     PAGER = "less";
   };
 }

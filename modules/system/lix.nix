@@ -1,44 +1,28 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }:
 {
   # ============================================================
   # Lix 包管理器（替代 Nix）
   # ============================================================
-  nixpkgs.overlays = [
-    (self: super: {
-      lix = super.lix.overrideAttrs (oldAttrs: {
-        mesonFlags = builtins.filter (flag: !(builtins.match ".*mimalloc.*" flag != null)) (
-          oldAttrs.mesonFlags or [ ]
-        );
-      });
-    })
-  ];
   nix = {
     package = pkgs.lix;
 
     settings = {
-      # 启用 flakes 和新 CLI
-      # 注意：ca-derivations 已移除——Lix 官方说明重写 CA derivations 期间
-      # 不提供可用实现，启用无效且可能引发问题。
       experimental-features = [
         "nix-command"
         "flakes"
       ];
-      sandbox = "relaxed";
-      # 自动优化 nix store（硬链接去重）
+
+      # 保持沙箱开启；relaxed 会削弱构建隔离，不建议作为默认。
+      sandbox = true;
       auto-optimise-store = true;
-
-      # 构建器使用 substitute
       builders-use-substitutes = true;
-
-      # 并发构建数
       max-jobs = "auto";
 
-      # ===== 保留策略（防止回收后重复下载）=====
+      # 保留输出和 derivation，避免回收后重复下载。
       keep-outputs = true;
       keep-derivations = true;
 
@@ -51,61 +35,49 @@
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://attic.xuyh0120.win/lantian"
         "https://cache.nixos.org/"
-        "https://cache.thalheim.io"
       ];
 
       extra-trusted-public-keys = [
         "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
-        "cache.thalheim.io-1:R7msbosLEZKrxk/lKxf9BTjOOH7Ax3H0Qj0/6wiHOgc="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
     };
-    # ============================================================
-    # 自动垃圾回收（nix.gc）
-    # ============================================================
+
+    # 保留足够的回滚窗口；3 天会让一次失败升级很快失去旧代。
     gc = {
       automatic = true;
       dates = "Sun 03:00";
-      options = "--delete-older-than 3d";
+      options = "--delete-older-than 14d";
       persistent = true;
     };
-    # ============================================================
-    # 自动优化 Nix Store（nix.optimise）
-    # ============================================================
-    optimise = {
-      automatic = false;
-    };
   };
+
   # ============================================================
   # 系统级 nix 工具
   # ============================================================
-  systemd.services.nix-daemon.environment = {
-    GOPROXY = "https://goproxy.cn,direct";
-    GOSUMDB = "sum.golang.google.cn";
-  };
-
   environment.systemPackages = with pkgs; [
-    nixfmt-tree # nix 代码格式化
-    nix-diff # 对比两个 derivation 差异
-    nix-tree # 交互式依赖树查看
+    nixfmt-tree
+    nix-diff
+    nix-tree
 
     (writeShellScriptBin "clean-nixos" ''
-      set -e
+      set -euo pipefail
 
       echo "=== Cleaning user-level generations ==="
-      ${nix}/bin/nix-env --delete-generations old
+      ${config.nix.package}/bin/nix-env --delete-generations old
 
       echo "=== Cleaning system-level generations ==="
-      doas ${nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations old
+      doas ${config.nix.package}/bin/nix-env \
+        --profile /nix/var/nix/profiles/system --delete-generations old
 
       echo "=== Running garbage collection ==="
-      doas ${nix}/bin/nix-collect-garbage -d 2>/dev/null || doas nix-collect-garbage -d
+      doas ${config.nix.package}/bin/nix-collect-garbage -d
 
       echo "=== Optimizing Nix store ==="
-      doas ${nix}/bin/nix-store --optimize 2>/dev/null || doas nix-store --optimize
+      doas ${config.nix.package}/bin/nix-store --optimize
 
       echo "=== Updating bootloader entries ==="
-      doas nixos-rebuild boot
+      doas nixos-rebuild boot --flake /etc/nixos#NCastleSurvivor
 
       echo "=== System cleanup and boot update completed! ==="
     '')

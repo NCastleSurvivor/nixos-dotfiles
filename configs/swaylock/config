@@ -55,7 +55,7 @@ layout=1
 # 布局 2: 两个指示器（双屏）
 
 # ===== 行为 =====
-ignore-empty-password
+# 不要使用 ignore-empty-password：空密码不应解锁。
 show-failed-attempts
 show-keyboard-layout
 keyboard-layout=us,cn

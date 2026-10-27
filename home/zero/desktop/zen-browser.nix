@@ -5,6 +5,9 @@
     inputs.stylix.homeModules.stylix
   ];
   stylix = {
+    enable = true;
+    image = ../../../assets/wallpapers/wall.jpg;
+    polarity = "dark";
     targets = {
       zen-browser.profileNames = [ "default" ];
       nixos-icons.enable = false;
@@ -32,7 +35,10 @@
         Fingerprinting = true;
       };
       RequestedLocales = [ "zh-CN" ];
-      SearchEngines_Default = "Bing";
+      # Firefox 企业策略的默认搜索引擎是对象，不是带下划线的扁平键。
+      SearchEngines = {
+        Default = "Bing";
+      };
     };
     profiles.default = {
       isDefault = true;

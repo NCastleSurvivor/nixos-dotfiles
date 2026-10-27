@@ -61,31 +61,32 @@
 
     # 交互式配置
     interactiveShellInit = ''
-             fish_vi_key_bindings
-             bind -M insert \cr history-search-backward
-             bind -M default \cr history-search-backward
-
-             function fish_greeting
-                set -l user_name (whoami)
-      	  set -l sys_info (uname -srm)
-      	  set -l fish_ver (string split " " (fish --version))[3]
-      	  set -l date_info (date '+%Y-%m-%d %H:%M:%S')
-
-      	  echo "Welcome back, $user_name!"
-      	  echo "System: $sys_info"
-      	  echo "Shell: fish $fish_ver"
-      	  echo "Date: $date_info"
-      	  echo ""
-      	end
-
-      	function reloadfish
-      	  source ~/.config/fish/config.fish
-      	  echo "Fish config reloaded!"
-      	end
+      fish_vi_key_bindings
+      bind -M insert \cr history-search-backward
+      bind -M default \cr history-search-backward
     '';
 
     # ===== 函数 =====
     functions = {
+      # 登录欢迎信息
+      fish_greeting = ''
+        set -l user_name (whoami)
+        set -l sys_info (uname -srm)
+        set -l fish_ver (string split " " (fish --version))[3]
+        set -l date_info (date '+%Y-%m-%d %H:%M:%S')
+
+        echo "Welcome back, $user_name!"
+        echo "System: $sys_info"
+        echo "Shell: fish $fish_ver"
+        echo "Date: $date_info"
+        echo ""
+      '';
+
+      reloadfish = ''
+        source ~/.config/fish/config.fish
+        echo "Fish config reloaded!"
+      '';
+
       # 提取各种压缩包
       extract = ''
         if test -f $argv[1]

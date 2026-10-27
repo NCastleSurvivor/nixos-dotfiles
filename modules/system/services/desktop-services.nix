@@ -1,8 +1,5 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
-  # ===== 会话管理（niri / greetd 依赖） =====
-  services.seatd.enable = true;
-
   # ===== 磁盘自动挂载 =====
   services.udisks2.enable = true;
 
@@ -24,11 +21,16 @@
     };
   };
 
-  # ===== 日志大小限制 =====
-  services.journald.settings = {
-    Journal = {
-      SystemMaxUse = "100M";
-      Storage = "persistent";
+  # 让 udiskie 随图形会话启动，而不是只安装一个不会运行的包。
+  systemd.user.services.udiskie = {
+    description = "udiskie removable media tray";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.udiskie}/bin/udiskie";
+      Restart = "on-failure";
+      RestartSec = 2;
     };
   };
 }

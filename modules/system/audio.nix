@@ -1,9 +1,9 @@
-{ config, pkgs, ... }:
+{ ... }:
 {
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
+
   # ===== PipeWire 音频栈 =====
-  # 替代 PulseAudio，支持低延迟、蓝牙、视频捕获
   services.pipewire = {
     enable = true;
     alsa = {
@@ -12,10 +12,10 @@
     };
     pulse.enable = true; # PulseAudio 兼容接口
     jack.enable = true; # JACK 兼容接口
-    wireplumber.enable = true; # 会话管理器
+    # wireplumber 默认跟随 pipewire.enable；无需显式再写 true。
   };
 
-  # 音频质量优化
+  # 音频质量/延迟参数
   services.pipewire.extraConfig.pipewire = {
     "context.properties" = {
       "default.clock.rate" = 48000;

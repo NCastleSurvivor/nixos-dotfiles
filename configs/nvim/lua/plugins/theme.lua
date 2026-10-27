@@ -15,7 +15,7 @@ return {
         opts = {
             background = {
                 light = "latte",
-                drak = "frappe",
+                dark = "frappe",
             },
             transparent_background = true,
             float = {

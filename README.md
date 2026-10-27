@@ -1,6 +1,8 @@
-# NCastleSurvivor — NixOS 配置
+# NCastleSurvivor — NixOS 配置（修改版）
 
-> Lix + NixOS 26.05 (unstable) + Limine + niri + noctalia + Home Manager + agenix + Flake
+> Lix + NixOS 26.05 兼容基线（flake 跟随 `nixos-unstable`）+ Limine + niri + Noctalia + Home Manager + agenix + Flake
+>
+> 这是按审计报告修改后的副本。原始仓库的审计见 [问题及修改建议.md](问题及修改建议.md)，本次改动清单见 [修改记录.md](修改记录.md)，与最新 NixOS 的差异见 [NixOS-最新变动与迁移指南.md](NixOS-最新变动与迁移指南.md)。
 
 ## 系统概览
 
@@ -10,56 +12,112 @@
 | 用户名 | `zero` |
 | CPU | AMD Ryzen 7 4800H |
 | 显卡 | NVIDIA RTX 2060 + AMD Radeon（PRIME offload） |
-| 网卡 | Intel AX210 (Wi-Fi 6E + BT 5.3) |
-| 内核 | CachyOS Latest |
-| 引导 | Limine（UEFI removable） |
+| 网卡 | Intel AX210（Wi-Fi 6E + BT 5.3） |
+| 内核 | CachyOS Latest（`nix-cachyos-kernel` pinned overlay） |
+| 引导 | Limine（UEFI；**按用户要求保持原配置不变**） |
 | 桌面 | niri（Wayland）+ xwayland-satellite |
 | 登录 | greetd + tuigreet |
-| 状态栏/通知 | noctalia |
+| 状态栏/通知 | Noctalia（v5 TOML 配置） |
 | 终端 | Kitty + Fish |
-| 浏览器 | Zen Browser |
+| 浏览器 | Zen Browser（twilight） |
 | 编辑器 | Neovim（lazy.nvim） |
 | 输入法 | Fcitx5 + Rime |
 | 音频 | PipeWire + WirePlumber |
 | 网络 | NetworkManager + iwd + systemd-resolved |
-| 特权 | doas（替代 sudo） |
+| 特权 | doas 日常使用；保留 sudo 以兼容构建工具 |
 | 密码管理 | agenix（age + SSH 主机密钥） |
 | 包管理 | Lix + Flake |
+
+### 本修改版明确保留的三项
+
+以下内容按你的要求**没有改动**：
+
+1. **Limine 启动项**：`modules/system/boot.nix` 整体保持原样，包括 `default_entry` 和 Windows 条目。升级前请自行核对 `/boot/limine.conf` 的条目顺序。
+2. **Rime grammar 文件路径**：`home/zero/rime.nix` 中 `fcitx5/rime/wangxiang-lts-zh-hans.gram` 的路径和链接目标保持原样。
+3. **Rime 数据**：`configs/rime/` 全量保留（约 193.4 MB），没有删除或移动词典、语料或脚本。
+
+因此，审计报告中与这三项相关的风险仍然存在；详见 [修改记录.md](修改记录.md) 的“保留项”一节。
 
 ---
 
 ## 目录结构
 
-```
-nixos-dotfiles/
+```text
+nixos-dotfiles-修改版/
+├── .gitignore                   # 构建产物/明文秘密忽略
 ├── flake.nix                    # Flake 入口
-├── configuration.nix            # 系统主配置 + unfree 白名单
+├── configuration.nix            # 系统主配置 + Stylix
 ├── hardware-configuration.nix   # 硬件配置（nixos-generate-config 生成）
 ├── secrets/
-│   ├── secrets.nix              # agenix 加密规则（公钥列表）
+│   ├── README.md                # 密钥目录说明
+│   ├── secrets.nix              # agenix 加密规则（主机公钥模板）
 │   └── zero_password.age        # 加密的用户密码哈希
 ├── modules/
-│   ├── system/                  # 系统模块
-│   │   ├── boot.nix             # 引导/内核/内核参数
-│   │   ├── hardware.nix         # NVIDIA/蓝牙/电源/TLP
+│   ├── system/
+│   │   ├── boot.nix             # 引导/内核（Limine 条目按要求未改）
+│   │   ├── hardware.nix         # NVIDIA/蓝牙/显卡
+│   │   ├── power.nix            # TLP/zram/电源管理
 │   │   ├── networking.nix       # NetworkManager/DNS/防火墙
 │   │   ├── audio.nix            # PipeWire
-│   │   ├── users.nix            # 用户/密码
-│   │   ├── age.nix              # agenix 解密配置
-│   │   ├── proxy.nix            # dae 透明代理（可选）
-│   │   └── ...
-│   └── desktop/                 # 桌面模块（niri/greetd/fcitx...）
+│   │   ├── lix.nix              # Lix / GC / 清理脚本
+│   │   ├── environment.nix      # 全局环境变量
+│   │   ├── i18n.nix             # 时区/locale/NTP
+│   │   ├── packages/            # 系统软件包
+│   │   │   ├── base.nix         # 基础工具
+│   │   │   ├── apps.nix         # 应用/unfree/包装脚本
+│   │   │   ├── fonts.nix        # 系统字体
+│   │   │   └── default.nix
+│   │   ├── security/            # 账户与密钥
+│   │   │   ├── age.nix
+│   │   │   ├── doas.nix
+│   │   │   ├── ssh.nix
+│   │   │   ├── users.nix
+│   │   │   └── default.nix
+│   │   ├── services/            # 系统服务
+│   │   │   ├── desktop-services.nix  # polkit/udisks2/upower/udiskie
+│   │   │   ├── logging.nix      # journald
+│   │   │   └── default.nix
+│   │   └── default.nix
+│   └── desktop/
+│       ├── display-manager/greetd.nix
+│       ├── wayland/niri.nix
+│       ├── wayland/xdg-portal.nix
+│       ├── input/fcitx.nix
+│       └── default.nix
 ├── home/zero/                   # Home Manager 用户配置
-│   ├── packages.nix             # 统一软件包组
-│   ├── shell.nix                # Fish 配置
-│   ├── noctalia.nix             # noctalia 桌面 Shell
-│   ├── zen-browser.nix          # Zen Browser + stylix
-│   └── ...
-├── configs/                     # 软件原始配置（niri/kitty/nvim/rime...）
-│   └── dae/config.dae           # dae 代理配置（可选）
-├── proxy.md                     # 代理软件配置指南
-└── 配置审计与优化方案.md         # 配置审计报告
+│   ├── default.nix
+│   ├── git.nix                  # Git
+│   ├── shell.nix                # Fish
+│   ├── xdg.nix                  # XDG configFile 映射
+│   ├── fonts.nix                # HM 字体
+│   ├── rime.nix                 # Rime dataFile 映射（路径未改）
+│   ├── nh.nix                   # nh
+│   └── desktop/
+│       ├── noctalia.nix         # Noctalia v5：天气/壁纸/控制中心
+│       └── zen-browser.nix      # Zen Browser + Stylix target
+├── assets/
+│   └── wallpapers/wall.jpg      # Stylix 主题图
+├── configs/
+│   ├── niri/config.kdl
+│   ├── kitty/kitty.conf
+│   ├── fuzzel/fuzzel.ini
+│   ├── nvim/                    # Neovim/LazyVim
+│   ├── swaylock/config
+│   └── rime/                    # Rime 数据（按要求全量保留）
+├── 问题及修改建议.md
+├── 修改记录.md
+└── NixOS-最新变动与迁移指南.md
 ```
+
+已删除的旧文件：`modules/system/sops.nix`、`modules/desktop/xwayland-satellite.nix`、`configs/mako/`、`configs/waybar/`、`configs/fastfetch/`、Neovim 的 `example.lua`/`ai.lua`。
+
+### 目录设计原则
+
+- `modules/system/` 只放 NixOS 系统模块；`packages/`、`security/`、`services/` 按职责分组，不再把系统包放进 `home/`。
+- `home/zero/` 只放 Home Manager 用户配置；`xdg.nix`、`fonts.nix`、`rime.nix` 各自单一职责。
+- `modules/desktop/` 按 `display-manager/`、`wayland/`、`input/` 分组。
+- `configs/` 放应用配置；`assets/` 放壁纸等二进制/图片资产，避免混入 niri 配置。
+- `secrets/` 只放公钥规则和 age 密文；`boot.nix` 中的 Limine 条目保持不变。
 
 ---
 
@@ -81,49 +139,64 @@ nixos-generate-config --root /mnt
 cp /mnt/etc/nixos/hardware-configuration.nix /mnt/home/zero/nixos-configuration/
 ```
 
-### 3. 配置 agenix 密码（首次部署）
+> `hardware-configuration.nix` 中的 UUID 和 `hardware.nix` 中的 PCI BusID 是机器相关值，换机必须重新生成/核对。
+
+### 3. 配置 agenix（首次部署）
 
 ```bash
-# 进入工具环境
-nix-shell -p age agenix mkpasswd
+# 工具环境（包含 ssh-to-age）
+nix-shell -p age agenix mkpasswd ssh-to-age
 
 # 生成密码哈希
 mkpasswd --method=yescrypt
-# Password: <你的密码>
-# 输出：$y$j9T$...（复制备用）
+# 输入密码，复制输出哈希
 
-# 获取主机 SSH 公钥（转 age 格式）
+# 获取主机 SSH 公钥并转 age 格式
 ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
-# → age1主机公钥...
+# 输出：age1...（复制）
 
-# 编辑 secrets/secrets.nix，填入主机 age 公钥
-nano secrets/secrets.nix
+# 编辑 secrets/secrets.nix，把占位符替换成上面的 age 公钥
+$EDITOR secrets/secrets.nix
 
-# 创建明文密码文件并加密
-echo '$y$j9T$你的哈希' > /tmp/zero_password.txt
+# 加密密码哈希
 cd secrets
-agenix -e zero_password.age < /tmp/zero_password.txt
-rm /tmp/zero_password.txt
-
-# 验证（需要主机私钥）
-agenix -d zero_password.age
+agenix -e zero_password.age
+# 或：printf '%s\n' '$y$j9T$...' | agenix -e zero_password.age
 ```
+
+`secrets/secrets.nix` 里现在是一个占位公钥：
+
+```nix
+hostKey = "age1REPLACE_WITH_YOUR_HOST_PUBLIC_KEY";
+```
+
+**不替换它，`agenix -e` 会失败；这是有意为之，避免误用别人的密钥。**
+
+> 首次启动时，agenix 需要 `/etc/ssh/ssh_host_ed25519_key` 已存在。`modules/system/security/ssh.nix` 已设置 `generateHostKeys = true`，但如果是在 live ISO 中直接安装，建议先按旧 README 的方式把主机密钥复制到 `/mnt/etc/ssh/`，或在首次启动前确认密钥已生成。
 
 ### 4. 安装
 
 ```bash
 ln -sfn /mnt/home/zero/nixos-configuration /mnt/etc/nixos
-nixos-install --flake .#NCastleSurvivor --substituters https://mirror.sjtu.edu.cn/nix-channels/store --impure
-reboot
+nixos-install --flake .#NCastleSurvivor --impure
+```
+
+如果使用镜像，建议通过 `--option` 传入，而不是依赖旧示例中的 `--substituters`：
+
+```bash
+nixos-install --flake .#NCastleSurvivor --impure \
+  --option substituters "https://mirror.sjtu.edu.cn/nix-channels/store https://cache.nixos.org"
 ```
 
 ### 5. 首次登录后
 
 ```bash
-nix-shell -p nix-info --run "nix-info -m"
-echo $XDG_SESSION_TYPE   # wayland
-nvidia-smi
-fcitx5-remote -r         # 重载输入法
+nix --version                 # 确认 Lix >= 2.95.4（安全修复）
+nixos-rebuild switch --flake .#NCastleSurvivor
+systemctl --user status xwayland-satellite
+niri msg outputs
+fcitx5-remote -r
+noctalia config validate
 ```
 
 ---
@@ -132,173 +205,114 @@ fcitx5-remote -r         # 重载输入法
 
 ### 原理
 
-用户密码哈希通过 [age](https://github.com/FiloSottile/age) 加密存储在 `secrets/zero_password.age`，可安全提交到 git。系统激活时用主机 SSH 私钥 (`/etc/ssh/ssh_host_ed25519_key`) 解密。
+用户密码哈希通过 [age](https://github.com/FiloSottile/age) 加密存储在 `secrets/zero_password.age`，系统激活时用主机 SSH 私钥（`/etc/ssh/ssh_host_ed25519_key`）解密。agenix 模块会自动把 `users` 的 activation 依赖挂到 `agenixInstall` 上，因此不需要 sops-nix 的 `neededForUsers` 选项。
 
 ### 密钥说明
 
 | 密钥 | 位置 | 作用 |
-|------|------|------|
-| 主机 ed25519 私钥 | `/etc/ssh/ssh_host_ed25519_key` | `nixos-rebuild` 时解密秘密 |
+|---|---|---|
+| 主机 ed25519 私钥 | `/etc/ssh/ssh_host_ed25519_key` | 构建/激活时解密秘密 |
 | 主机 ed25519 公钥（转 age） | `secrets/secrets.nix` | 加密时使用，仅本主机可解密 |
 
-### 日常操作
+### 修改密码
 
-```bash
-# 查看密码哈希（需要主机私钥）
-cd secrets && agenix -d zero_password.age
-
-# 修改密码
-mkpasswd --method=yescrypt | agenix -e zero_password.age
-# 输入新密码后自动加密
-
-# 修改后重新构建
-doas nixos-rebuild switch --flake .#NCastleSurvivor
-```
-
----
-
-## 重装系统 / 更换电脑：agenix 重新加密密钥
-
-当你重装系统或更换电脑时，主机 SSH 密钥会变化，导致旧的 `.age` 文件无法解密。有两种处理方式：
-
-### 方式 A：迁移旧主机密钥（推荐，最简单）
-
-如果旧电脑还能启动，直接备份并恢复密钥：
-
-```bash
-# ===== 旧电脑上操作 =====
-# 备份主机 SSH 密钥
-doas cp /etc/ssh/ssh_host_ed25519_key /mnt/usb/ssh_host_ed25519_key
-doas cp /etc/ssh/ssh_host_ed25519_key.pub /mnt/usb/ssh_host_ed25519_key.pub
-
-# ===== 新电脑上操作（安装系统前，在 live ISO 中）=====
-# 先恢复密钥到目标系统
-doas cp /mnt/usb/ssh_host_ed25519_key /mnt/etc/ssh/
-doas cp /mnt/usb/ssh_host_ed25519_key.pub /mnt/etc/ssh/
-doas chmod 600 /mnt/etc/ssh/ssh_host_ed25519_key
-doas chmod 644 /mnt/etc/ssh/ssh_host_ed25519_key.pub
-
-# 然后正常 nixos-install，密钥会被保留
-```
-
-> 恢复后无需重新加密 `.age` 文件，因为密钥没变。
-
----
-
-### 方式 B：用新密钥重新加密（旧电脑不可用时）
-
-如果旧电脑已无法启动，需要用新主机的公钥重新加密所有 `.age` 文件。
-
-#### 步骤 1：获取新主机的 age 公钥
-
-```bash
-# 在新电脑上（安装完系统后）
-ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
-# 输出：age1xxxxxxxx...（复制备用）
-```
-
-#### 步骤 2：更新 `secrets/secrets.nix`
+本修改版设置了：
 
 ```nix
-# secrets/secrets.nix
-let
-  # 替换为新主机的 age 公钥
-  hostKey = "age1新主机公钥...";
-in
-{
-  "zero_password.age".publicKeys = [ hostKey ];
-}
+users.mutableUsers = false;
 ```
 
-#### 步骤 3：重新加密所有 `.age` 文件
+所以密码**完全由 secret 决定**。修改流程：
 
 ```bash
-# 进入 secrets 目录
 cd secrets
-
-# 方式一：如果你还能在某处解密旧文件（如另一台有旧密钥的机器）
-# 先解密，再用新公钥加密
-agenix -d zero_password.age > /tmp/zero_password.txt
-agenix -e zero_password.age < /tmp/zero_password.txt
-rm /tmp/zero_password.txt
-
-# 方式二：使用 agenix --rekey（需要旧私钥可访问）
-# 将旧私钥临时放到可访问位置
-agenix -r -i /path/to/old/ssh_host_ed25519_key
-
-# 方式三：如果完全无法解密旧文件，只能重新创建
 mkpasswd --method=yescrypt | agenix -e zero_password.age
-# 输入新密码
-```
-
-#### 步骤 4：验证并构建
-
-```bash
-# 验证新加密文件可被新主机解密
-agenix -d zero_password.age
-
-# 重新构建系统
 cd ..
-doas nixos-rebuild switch --flake .#NCastleSurvivor
+sudo nixos-rebuild switch --flake .#NCastleSurvivor
 ```
+
+不要再用 `passwd` 修改密码；下一次 activation 会把它覆盖回 secret 中的值。
+
+### 重装/换机
+
+主机密钥变化后，旧的 `.age` 文件无法解密。两种方式：
+
+1. **迁移旧主机密钥**（推荐）：备份 `/etc/ssh/ssh_host_ed25519_key*`，在新系统安装前复制到 `/mnt/etc/ssh/`，保持权限 `600`。
+2. **重新加密**：在新机器上取得新的 age 公钥，更新 `secrets/secrets.nix`，用旧机器解密后重新 `agenix -e`。
+
+`secrets/secrets.nix` 只包含公钥，可以提交；私钥永远不要放进仓库。
 
 ---
 
-### 方式 C：多主机密钥（提前配置，避免重装麻烦）
+## SSH
 
-在 `secrets/secrets.nix` 中同时加入多台机器的公钥，这样任意一台都能解密：
+本修改版默认**不运行 sshd**，只通过 `services.openssh.generateHostKeys = true` 生成 agenix 需要的主机密钥：
 
 ```nix
-# secrets/secrets.nix
-let
-  laptopKey = "age1笔记本公钥...";
-  desktopKey = "age1台式机公钥...";
-  backupKey = "age1备份密钥公钥...";  # age-keygen 生成的个人密钥
-in
-{
-  "zero_password.age".publicKeys = [ laptopKey desktopKey backupKey ];
-}
+services.openssh = {
+  enable = false;
+  generateHostKeys = true;
+  hostKeys = [ ... ];
+};
 ```
 
-添加新主机后重新加密：
+如果需要远程登录：
+
+1. 把 `enable` 改为 `true`；
+2. 在 `modules/system/networking.nix` 放行 22；
+3. 给 `users.users.zero.openssh.authorizedKeys.keys` 添加公钥；
+4. 重新构建并测试。
+
+---
+
+## Noctalia / Stylix / 锁屏
+
+### Noctalia
+
+- `programs.noctalia.enable = true` 已设置；
+- 包在系统层安装，`programs.noctalia.package = null`，避免 HM 重复安装；
+- 配置已升级到 Noctalia v5 的 TOML 结构，包含：
+  - 顶栏 `start/center/end` widget 列表（launcher、workspaces、weather、tray、network、bluetooth、volume、battery、control-center、session）；
+  - 天气服务与苏州位置；
+  - 壁纸轮播（30 分钟、随机、全屏时暂停）；
+  - 控制中心（compact sidebar、媒体可视化）；
+  - Catppuccin 深色主题。
+- 修改配置后运行：
 
 ```bash
-# 在已有解密权限的机器上执行
-cd secrets
-agenix --rekey
-# 或：agenix -r -i /etc/ssh/ssh_host_ed25519_key
+noctalia config validate
 ```
 
----
+如果要从现有桌面导出配置：
 
-## 非自由软件管理
+```bash
+noctalia config export > /tmp/noctalia.toml
+```
 
-使用 `allowUnfreePredicate` 白名单替代全局 `allowUnfree = true`。各模块通过 `myUnfreePackages` 选项声明所需的非自由包，自动合并。
+再把 TOML 翻译成 `programs.noctalia.settings`。
 
-当前白名单（`home/zero/packages.nix`）：
+要跟随最新 Noctalia 版本：
 
-| 包名 | 用途 |
-|------|------|
-| `qq` | 腾讯 QQ |
-| `wechat-uos` | 微信 |
-| `unrar` | RAR 解压 |
-| `p7zip` | 7z 解压 |
-| `wpsoffice-cn` | WPS Office |
+```bash
+nix flake update noctalia
+sudo nixos-rebuild switch --flake .#NCastleSurvivor
+```
 
-> NVIDIA 驱动通过 `hardware.nvidia` 模块自动处理 unfree 许可，无需手动加入白名单。
+当前配置按 v5 的 `bar.default`、`widget`、`control_center`、`weather`、`location`、`wallpaper.automation` 结构编写；如果上游再改 schema，以 `noctalia config validate` 的结果为准。
 
----
+### Stylix
 
-## 需要修改的项
+`configuration.nix` 和 `home/zero/desktop/zen-browser.nix` 都设置了 `stylix.enable = true`，并使用 `assets/wallpapers/wall.jpg` 作为主题图。没有这个 enable，`stylix.targets` 会被全部忽略。
 
-| 文件 | 需更改项 |
-|------|----------|
-| `hardware-configuration.nix` | 分区 UUID（`nixos-generate-config` 生成） |
-| `modules/system/hardware.nix` | `amdgpuBusId` / `nvidiaBusId`（`lspci` 确认） |
-| `home/zero/programs.nix` | Git 用户名和邮箱 |
-| `secrets/secrets.nix` | 主机 age 公钥 |
-| `secrets/zero_password.age` | 用自己的密码重新加密 |
-| `configs/dae/config.dae` | 代理订阅链接（如使用代理） |
+### 锁屏
+
+- `swaylock-effects` + `swayidle` 已安装；
+- niri 启动时运行 `swayidle`：5 分钟锁屏、10 分钟挂起；
+- `Mod+Alt+L` 手动锁屏；
+- `configs/swaylock/config` 已删除 `ignore-empty-password`；
+- 锁屏配置通过 `xdg.configFile."swaylock"` 映射。
+
+如果使用 Noctalia 自带的 idle/lock，请关闭 niri 里的 `swayidle` 行，避免两套策略同时运行。
 
 ---
 
@@ -306,20 +320,59 @@ agenix --rekey
 
 ```bash
 # 构建并切换
-doas nixos-rebuild switch --flake .#NCastleSurvivor
+sudo nixos-rebuild switch --flake .#NCastleSurvivor
 
 # 仅构建不切换
-doas nixos-rebuild build --flake .#NCastleSurvivor
+sudo nixos-rebuild build --flake .#NCastleSurvivor
 
-# 查看系统差异（升级前后）
+# 查看系统差异
 nvd diff /run/current-system result
-
-# 垃圾回收
-doas nix-collect-garbage -d
 
 # 更新所有 flake 输入
 nix flake update
 
 # 仅更新指定输入
-nix flake lock --update-input nixpkgs
+nix flake update nixpkgs
+
+# 垃圾回收（脚本已保留 14 天回滚窗口）
+sudo nix-collect-garbage -d
+
+# 清理脚本
+clean-nixos
+
+# agenix 解密查看
+sudo agenix -d secrets/zero_password.age
 ```
+
+> 旧写法 `nix flake lock --update-input nixpkgs` 已过时，使用 `nix flake update nixpkgs`。
+
+---
+
+## 需要按机器修改的项
+
+| 文件 | 需更改项 |
+|---|---|
+| `hardware-configuration.nix` | 分区 UUID（`nixos-generate-config` 生成） |
+| `modules/system/hardware.nix` | `amdgpuBusId` / `nvidiaBusId`（`lspci` 确认） |
+| `home/zero/git.nix` | Git 用户名和邮箱 |
+| `secrets/secrets.nix` | 主机 age 公钥（替换占位符） |
+| `secrets/zero_password.age` | 用自己的密码重新加密 |
+| `home/zero/desktop/noctalia.nix` | 按实际桌面导出结果补充 v5 配置 |
+| `configs/nvim` | 首次运行后提交 `lazy-lock.json` |
+
+---
+
+## 本次修改的边界
+
+- **Limine 未改**：`modules/system/boot.nix` 未修改，`default_entry`/Windows 条目的风险仍在。
+- **Rime grammar 路径未改**：`fcitx5/rime/wangxiang-lts-zh-hans.gram` 的路径和目标保持原样；如果 Rime 仍找不到模型，需要按原路径自行放置文件。
+- **Rime 数据未改**：`configs/rime/` 约 193.4 MB 全部保留，没有做瘦身。
+- 当前环境没有 Nix，无法执行 `nixos-rebuild`/`home-manager build`；请在目标 Linux 机按 [修改记录.md](修改记录.md) 的验证清单复核。
+
+---
+
+## 相关文档
+
+- [问题及修改建议.md](问题及修改建议.md)：原始审计报告
+- [修改记录.md](修改记录.md)：本修改版的逐项改动、保留项和验证清单
+- [NixOS-最新变动与迁移指南.md](NixOS-最新变动与迁移指南.md)：NixOS 26.05/26.11、Home Manager 26.11、Nix/Lix 的变化

@@ -2,10 +2,9 @@
 { ... }:
 {
   imports = [
-    ./greetd.nix
-    ./niri.nix
-    ./fcitx.nix
-    ./xdg-portal.nix
-    ./xwayland-satellite.nix
+    ./display-manager/greetd.nix
+    ./wayland/niri.nix
+    ./wayland/xdg-portal.nix
+    ./input/fcitx.nix
   ];
 }

@@ -1,19 +1,15 @@
-{ config, pkgs, ... }:
-
+{ pkgs, ... }:
 {
-  myUnfreePackages = [
-    "nvidia-vaapi-driver"
-    "nvidia-persistenced"
-  ];
-  # 除了 doas.nix外其余移至此处
+  # 非自由软件白名单由 modules/system/packages/apps.nix 统一声明；
+  # nvidia-vaapi-driver 等自由软件不放入 unfree 名单。
   environment.systemPackages = with pkgs; [
     alsa-utils # ALSA 底层工具（alsamixer, amixer）
     pavucontrol # PulseAudio 音量控制面板（兼容 PipeWire）
     playerctl # MPRIS 媒体控制
-    #pamixer # 命令行音量控制（waybar 模块用）
     libva-utils
     vdpauinfo
     nvidia-vaapi-driver
+
     # 电源/温度
     powertop
     smartmontools
@@ -22,9 +18,9 @@
     inetutils # ping/telnet 等
     traceroute
     speedtest-cli
-    iproute2 # ip 命令
+    iproute2
     net-tools # ifconfig/netstat（兼容旧脚本）
-    ethtool # 网卡信息/配置
+    ethtool
 
     # 网络诊断
     nmap
@@ -33,9 +29,9 @@
     wireshark-cli
     netcat
     socat
-    bind # dig/nslookup（完整包）
+    bind # dig/nslookup
     whois
-    aria2 # 多线程下载
+    aria2
 
     # 硬件信息
     lshw
@@ -43,10 +39,10 @@
     dmidecode
     pciutils
     usbutils
-    udiskie # U 盘/移动硬盘自动挂载托盘（配合 udisks2）
-    polkit_gnome # Polkit 认证代理（配合 security.polkit）
-    brightnessctl # 屏幕亮度调节（配合 upower）
-    acpi # 电池/温度信息（配合 upower）
-
+    udiskie # 由 modules/system/services.nix 的 user service 启动
+    polkit_gnome # Polkit 认证代理
+    brightnessctl
+    acpi
+    less
   ];
 }
