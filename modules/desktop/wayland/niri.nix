@@ -20,8 +20,8 @@
     niri
     fuzzel
     xwayland-satellite # 由 niri 的 spawn-at-startup 启动
-    swaylock-effects
-    swayidle
+    #swaylock-effects
+    #swayidle
   ];
 
   # Qt 程序 Wayland 支持
