@@ -9,11 +9,13 @@
     libva-utils
     vdpauinfo
     nvidia-vaapi-driver
-
     # 电源/温度
     powertop
     smartmontools
-
+    #agenix加密相关包
+    age
+    ssh-to-age
+    agenix-cli
     # 基础网络工具
     inetutils # ping/telnet 等
     traceroute

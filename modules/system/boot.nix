@@ -58,8 +58,10 @@
         "ntfs3"
         "vfat"
       ];
-      systemd.initrdBin = with pkgs; [
+      systemd.storePaths = with pkgs; [
         openssl
+        libbpf
+        libxcrypt
       ];
     };
     blacklistedKernelModules = [ "ucsi_ccg" ];

@@ -2,17 +2,7 @@
 {
   imports = [
     inputs.zen-browser.homeModules.twilight
-    inputs.stylix.homeModules.stylix
   ];
-  stylix = {
-    enable = true;
-    image = ../../../assets/wallpapers/wall.jpg;
-    polarity = "dark";
-    targets = {
-      zen-browser.profileNames = [ "default" ];
-      nixos-icons.enable = false;
-    };
-  };
   programs.zen-browser = {
     enable = true;
     languagePacks = [ "zh-CN" ];

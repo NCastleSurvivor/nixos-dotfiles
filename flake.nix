@@ -44,6 +44,7 @@
     {
       self,
       nixpkgs,
+      agenix,
       ...
     }@inputs:
     let
@@ -59,7 +60,7 @@
           };
           modules = [
             ./configuration.nix
-            inputs.agenix.nixosModules.default
+            agenix.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.stylix.nixosModules.stylix
             {

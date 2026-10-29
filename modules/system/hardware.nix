@@ -43,6 +43,13 @@
     };
   };
 
+  services = {
+    xserver.videoDrivers = [
+      "nvidia"
+      "modesetting"
+    ];
+  };
+
   # ===== 硬件断言 =====
   assertions = [
     {

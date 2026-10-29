@@ -2,7 +2,6 @@
 
 > Lix + NixOS 26.05 兼容基线（flake 跟随 `nixos-unstable`）+ Limine + niri + Noctalia + Home Manager + agenix + Flake
 >
-> 这是按审计报告修改后的副本。原始仓库的审计见 [问题及修改建议.md](问题及修改建议.md)，本次改动清单见 [修改记录.md](修改记录.md)，与最新 NixOS 的差异见 [NixOS-最新变动与迁移指南.md](NixOS-最新变动与迁移指南.md)。
 
 ## 系统概览
 
@@ -27,16 +26,6 @@
 | 特权 | doas 日常使用；保留 sudo 以兼容构建工具 |
 | 密码管理 | agenix（age + SSH 主机密钥） |
 | 包管理 | Lix + Flake |
-
-### 本修改版明确保留的三项
-
-以下内容按你的要求**没有改动**：
-
-1. **Limine 启动项**：`modules/system/boot.nix` 整体保持原样，包括 `default_entry` 和 Windows 条目。升级前请自行核对 `/boot/limine.conf` 的条目顺序。
-2. **Rime grammar 文件路径**：`home/zero/rime.nix` 中 `fcitx5/rime/wangxiang-lts-zh-hans.gram` 的路径和链接目标保持原样。
-3. **Rime 数据**：`configs/rime/` 全量保留（约 193.4 MB），没有删除或移动词典、语料或脚本。
-
-因此，审计报告中与这三项相关的风险仍然存在；详见 [修改记录.md](修改记录.md) 的“保留项”一节。
 
 ---
 
@@ -108,17 +97,6 @@ nixos-dotfiles-修改版/
 ├── 修改记录.md
 └── NixOS-最新变动与迁移指南.md
 ```
-
-已删除的旧文件：`modules/system/sops.nix`、`modules/desktop/xwayland-satellite.nix`、`configs/mako/`、`configs/waybar/`、`configs/fastfetch/`、Neovim 的 `example.lua`/`ai.lua`。
-
-### 目录设计原则
-
-- `modules/system/` 只放 NixOS 系统模块；`packages/`、`security/`、`services/` 按职责分组，不再把系统包放进 `home/`。
-- `home/zero/` 只放 Home Manager 用户配置；`xdg.nix`、`fonts.nix`、`rime.nix` 各自单一职责。
-- `modules/desktop/` 按 `display-manager/`、`wayland/`、`input/` 分组。
-- `configs/` 放应用配置；`assets/` 放壁纸等二进制/图片资产，避免混入 niri 配置。
-- `secrets/` 只放公钥规则和 age 密文；`boot.nix` 中的 Limine 条目保持不变。
-
 ---
 
 ## 快速部署
@@ -169,10 +147,6 @@ agenix -e zero_password.age
 ```nix
 hostKey = "age1REPLACE_WITH_YOUR_HOST_PUBLIC_KEY";
 ```
-
-**不替换它，`agenix -e` 会失败；这是有意为之，避免误用别人的密钥。**
-
-> 首次启动时，agenix 需要 `/etc/ssh/ssh_host_ed25519_key` 已存在。`modules/system/security/ssh.nix` 已设置 `generateHostKeys = true`，但如果是在 live ISO 中直接安装，建议先按旧 README 的方式把主机密钥复制到 `/mnt/etc/ssh/`，或在首次启动前确认密钥已生成。
 
 ### 4. 安装
 
@@ -360,19 +334,3 @@ sudo agenix -d secrets/zero_password.age
 | `home/zero/desktop/noctalia.nix` | 按实际桌面导出结果补充 v5 配置 |
 | `configs/nvim` | 首次运行后提交 `lazy-lock.json` |
 
----
-
-## 本次修改的边界
-
-- **Limine 未改**：`modules/system/boot.nix` 未修改，`default_entry`/Windows 条目的风险仍在。
-- **Rime grammar 路径未改**：`fcitx5/rime/wangxiang-lts-zh-hans.gram` 的路径和目标保持原样；如果 Rime 仍找不到模型，需要按原路径自行放置文件。
-- **Rime 数据未改**：`configs/rime/` 约 193.4 MB 全部保留，没有做瘦身。
-- 当前环境没有 Nix，无法执行 `nixos-rebuild`/`home-manager build`；请在目标 Linux 机按 [修改记录.md](修改记录.md) 的验证清单复核。
-
----
-
-## 相关文档
-
-- [问题及修改建议.md](问题及修改建议.md)：原始审计报告
-- [修改记录.md](修改记录.md)：本修改版的逐项改动、保留项和验证清单
-- [NixOS-最新变动与迁移指南.md](NixOS-最新变动与迁移指南.md)：NixOS 26.05/26.11、Home Manager 26.11、Nix/Lix 的变化

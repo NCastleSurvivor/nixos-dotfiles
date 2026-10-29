@@ -11,7 +11,7 @@
       force = true;
       recursive = true;
     };
-    "fcitx5/rime/wangxiang-lts-zh-hans.gram" = {
+    "fcitx5/rime/wanxiang-lts-zh-hans.gram" = {
       source = config.lib.file.mkOutOfStoreSymlink "/home/zero/Workspace/wanxiang-lts-zh-hans.gram";
       force = true;
     };

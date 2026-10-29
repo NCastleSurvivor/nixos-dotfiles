@@ -25,6 +25,7 @@
 
     wechat-uos
     qq
+    deepseek-harness
     # Noctalia 在系统层安装，确保 niri 直接 spawn 时一定能在 PATH 中找到；
     # HM 侧只负责生成配置，package 设为 null 避免重复安装。
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default

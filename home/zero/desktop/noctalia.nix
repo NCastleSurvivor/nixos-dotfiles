@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   imports = [
     inputs.noctalia.homeModules.default
@@ -30,6 +30,7 @@
           ];
           center = [ "clock" ];
           end = [
+            "clipboard"
             "tray"
             "network"
             "bluetooth"
@@ -53,6 +54,19 @@
         "control-center" = {
           glyph = "noctalia";
         };
+        clipboard = {
+          glyph = "clipboard-list";
+        };
+      };
+
+      # ------------------------------------------------------------------
+      # 剪切板：启用历史/面板，并配置保留与粘贴行为
+      # ------------------------------------------------------------------
+      shell = {
+        clipboard_enabled = true;
+        clipboard_history_max_entries = 100;
+        clipboard_confirm_clear_history = true;
+        clipboard_auto_paste = "auto";
       };
 
       # ------------------------------------------------------------------
@@ -98,10 +112,6 @@
         transition_duration = 1500;
         transition_on_startup = true;
 
-        default = {
-          path = "/home/zero/Pictures/Wallpapers/default.jpg";
-        };
-
         automation = {
           enabled = true;
           interval_seconds = 1800;
@@ -112,11 +122,67 @@
       };
 
       # ------------------------------------------------------------------
+      # Noctalia 自带锁屏（使用 PAM，不再依赖 swaylock）
+      # ------------------------------------------------------------------
+      lockscreen = {
+        enabled = true;
+        lock_before_suspend = true;
+        grace_period_seconds = 0;
+        fingerprint = false;
+        allow_empty_password = false;
+        blurred_desktop = false;
+        transition = [
+          "fade"
+          "wipe"
+          "disc"
+          "stripes"
+          "zoom"
+          "honeycomb"
+        ];
+        transition_duration = 1500;
+        edge_smoothness = 0.3;
+        blur_intensity = 0.5;
+        tint_intensity = 0.3;
+        wallpaper = "";
+        monitors = [ ];
+      };
+
+      # ------------------------------------------------------------------
+      # Noctalia 空闲行为：5 分钟锁屏、10 分钟关屏、15 分钟挂起
+      # ------------------------------------------------------------------
+      idle = {
+        behavior_order = [
+          "lock"
+          "screen-off"
+          "suspend"
+        ];
+        pre_action_fade_seconds = 2.0;
+
+        behavior = {
+          lock = {
+            timeout = 300;
+            action = "lock";
+            enabled = true;
+          };
+          "screen-off" = {
+            timeout = 600;
+            action = "screen_off";
+            enabled = true;
+          };
+          suspend = {
+            timeout = 900;
+            action = "lock_and_suspend";
+            enabled = true;
+          };
+        };
+      };
+
+      # ------------------------------------------------------------------
       # 主题
       # ------------------------------------------------------------------
       theme = {
         mode = "dark";
-        source = "builtin";
+        source = lib.mkForce "builtin";
         builtin = "Catppuccin";
       };
     };
